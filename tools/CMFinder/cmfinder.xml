@@ -1,0 +1,44 @@
+<tool id="cmfinder" name="CMFinder_v0" version="0.1.0">
+   
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+    <command interpreter="perl">cmfinder.pl $input1</command>
+    <inputs>
+        <param type="data" name="input1" format="fasta" />
+    </inputs>
+    <outputs>
+        <data name="output1" format="stk" />
+    </outputs>
+    <tests>
+        <test>
+            <param name="input1" value="data.fasta"/>
+            <output name="output1" file="seq.fasta.summary"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+        cmfinder.pl [options] SEQ
+Options:
+    -b               Do not use BLAST search to locate anchors
+    -v               Verbose. Print running information, and save intermediate results.
+    -c <number>      The maximum number of candidates in each sequence. Default 40. No bigger than 100.
+    -m <number>      The minimum length of candidates. Default 30
+    -M <number>      The maximum length of candidates. Default 100
+    -n <number>      The maximum number of output motifs. Default 3
+    -f <number>      The fraction of the sequences expected to contain the motif. Default 0.80
+    -s <number>      The number of stem-loops in the motif
+    -h               Show this list
+
+    ]]></help>
+    <citations>
+        <citation type="bibtex">
+@misc{githubseqtk,
+  author = {LastTODO, FirstTODO},
+  year = {TODO},
+  title = {seqtk},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = {https://github.com/lh3/seqtk},
+}</citation>
+    </citations>
+</tool>
