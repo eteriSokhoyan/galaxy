@@ -8,6 +8,7 @@ import urllib2
 
 from sqlalchemy import and_
 from sqlalchemy.sql import expression
+from markupsafe import escape
 
 from tool_shed.util import common_util
 from tool_shed.util import encoding_util
@@ -18,11 +19,12 @@ from galaxy import web
 from galaxy.managers import workflows
 from galaxy.model.item_attrs import UsesItemRatings
 from galaxy.model.mapping import desc
+from galaxy.util import unicodify
 from galaxy.util.sanitize_html import sanitize_html
 from galaxy.web import error, url_for
 from galaxy.web.base.controller import BaseUIController, SharableMixin, UsesStoredWorkflowMixin
 from galaxy.web.framework.formbuilder import form
-from galaxy.web.framework.helpers import escape, grids, time_ago, to_unicode
+from galaxy.web.framework.helpers import grids, time_ago, to_unicode
 from galaxy.workflow.extract import extract_workflow
 from galaxy.workflow.extract import summarize
 from galaxy.workflow.modules import MissingToolException
@@ -395,7 +397,7 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
         """Imports a workflow shared by other users."""
         # Set referer message.
         referer = trans.request.referer
-        if referer is not "":
+        if referer:
             referer_message = "<a href='%s'>return to the previous page</a>" % escape(referer)
         else:
             referer_message = "<a href='%s'>go to Galaxy's start page</a>" % url_for( '/' )
@@ -512,7 +514,7 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
     def gen_image( self, trans, id ):
         stored = self.get_stored_workflow( trans, id, check_ownership=True )
         trans.response.set_content_type("image/svg+xml")
-        return self._workflow_to_svg_canvas( trans, stored ).standalone_xml()
+        return self._workflow_to_svg_canvas( trans, stored ).tostring()
 
     @web.expose
     @web.require_login( "use Galaxy workflows" )
@@ -609,44 +611,37 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
         if not id:
             error( "Invalid workflow id" )
         stored = self.get_stored_workflow( trans, id )
-        return trans.fill_template( "workflow/editor.mako", stored=stored, annotation=self.get_item_annotation_str( trans.sa_session, trans.user, stored ) )
+        workflows = trans.sa_session.query( model.StoredWorkflow ) \
+            .filter_by( user=trans.user, deleted=False ) \
+            .order_by( desc( model.StoredWorkflow.table.c.update_time ) ) \
+            .all()
+        return trans.fill_template( "workflow/editor.mako", workflows=workflows, stored=stored, annotation=self.get_item_annotation_str( trans.sa_session, trans.user, stored ) )
 
     @web.json
-    def editor_form_post( self, trans, type='tool', tool_id=None, annotation=None, **incoming ):
+    def editor_form_post( self, trans, type=None, content_id=None, annotation=None, label=None, **incoming ):
         """
         Accepts a tool state and incoming values, and generates a new tool
         form and some additional information, packed into a json dictionary.
         This is used for the form shown in the right pane when a node
         is selected.
         """
-        tool_state = incoming.pop('tool_state', None)
-        trans.workflow_building_mode = True
+        tool_state = incoming.pop( 'tool_state' )
         module = module_factory.from_dict( trans, {
             'type': type,
-            'tool_id': tool_id,
-            'tool_state': tool_state
+            'content_id': content_id,
+            'tool_state': tool_state,
+            'label': label or None
         } )
-        # update module state
         module.update_state( incoming )
-        if type == 'tool':
-            return {
-                'tool_state': module.get_state(),
-                'data_inputs': module.get_data_inputs(),
-                'data_outputs': module.get_data_outputs(),
-                'tool_errors': module.get_errors(),
-                'form_html': module.get_config_form(),
-                'annotation': annotation,
-                'post_job_actions': module.get_post_job_actions()
-            }
-        else:
-            return {
-                'tool_state': module.get_state(),
-                'data_inputs': module.get_data_inputs(),
-                'data_outputs': module.get_data_outputs(),
-                'tool_errors': module.get_errors(),
-                'form_html': module.get_config_form(),
-                'annotation': annotation
-            }
+        return {
+            'label': module.label,
+            'tool_state': module.get_state(),
+            'data_inputs': module.get_data_inputs(),
+            'data_outputs': module.get_data_outputs(),
+            'tool_errors': module.get_errors(),
+            'form_html': module.get_config_form(),
+            'annotation': annotation
+        }
 
     @web.json
     def get_new_module_info( self, trans, type, **kwargs ):
@@ -663,7 +658,7 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
         return {
             'type': module.type,
             'name': module.get_name(),
-            'tool_id': module.get_tool_id(),
+            'content_id': module.get_content_id(),
             'tool_state': module.get_state(),
             'tool_model': tool_model,
             'tooltip': module.get_tooltip( static_path=url_for( '/static' ) ),
@@ -682,7 +677,7 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
         """
         trans.workflow_building_mode = True
         stored = self.get_stored_workflow( trans, id, check_ownership=True, check_accessible=False )
-        workflow_contents_manager = workflows.WorkflowContentsManager()
+        workflow_contents_manager = workflows.WorkflowContentsManager(trans.app)
         return workflow_contents_manager.workflow_to_dict( trans, stored, style="editor" )
 
     @web.json
@@ -692,13 +687,12 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
         """
         # Get the stored workflow
         stored = self.get_stored_workflow( trans, id )
-        workflow_contents_manager = workflows.WorkflowContentsManager()
+        workflow_contents_manager = workflows.WorkflowContentsManager(trans.app)
         try:
             workflow, errors = workflow_contents_manager.update_workflow_from_dict(
                 trans,
                 stored,
                 workflow_data,
-                from_editor=True,
             )
         except workflows.MissingToolsException as e:
             return dict(
@@ -755,10 +749,10 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
             workflow_name=workflow_dict['name'],
             workflow_description=workflow_dict['annotation'],
             workflow_content=workflow_content,
-            workflow_svg=self._workflow_to_svg_canvas( trans, stored ).standalone_xml()
+            workflow_svg=self._workflow_to_svg_canvas( trans, stored ).tostring()
         )
         # strip() b/c myExperiment XML parser doesn't allow white space before XML; utf-8 handles unicode characters.
-        request = unicode( request_raw.strip(), 'utf-8' )
+        request = unicodify( request_raw.strip(), 'utf-8' )
 
         # Do request and get result.
         auth_header = base64.b64encode( '%s:%s' % ( myexp_username, myexp_password ))
@@ -864,9 +858,11 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
             import_button = True
         if tool_shed_url and not import_button:
             # Use urllib (send another request to the tool shed) to retrieve the workflow.
-            workflow_url = '%s/workflow/import_workflow?repository_metadata_id=%s&workflow_name=%s&open_for_url=true' % \
-                ( tool_shed_url, repository_metadata_id, encoding_util.tool_shed_encode( workflow_name ) )
-            workflow_text = common_util.tool_shed_get( trans.app, tool_shed_url, workflow_url )
+            params = dict( repository_metadata_id=repository_metadata_id,
+                           workflow_name=encoding_util.tool_shed_encode( workflow_name ),
+                           open_for_url=True )
+            pathspec = [ 'workflow', 'import_workflow' ]
+            workflow_text = common_util.tool_shed_get( trans.app, tool_shed_url, pathspec=pathspec, params=params )
             import_button = True
         if import_button:
             workflow_data = None
@@ -876,7 +872,7 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
                 try:
                     workflow_data = urllib2.urlopen( url ).read()
                 except Exception, e:
-                    message = "Failed to open URL: <b>%s</b><br>Exception: %s" % ( url, escape( str( e ) ) )
+                    message = "Failed to open URL: <b>%s</b><br>Exception: %s" % ( escape( url ), escape( str( e ) ) )
                     status = 'error'
             elif workflow_text:
                 # This case occurs when the workflow_text was sent via http from the tool shed.
@@ -1294,7 +1290,6 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
     def _workflow_to_svg_canvas( self, trans, stored ):
         workflow = stored.latest_workflow
         workflow_canvas = WorkflowCanvas()
-        canvas = workflow_canvas.canvas
         for step in workflow.steps:
             # Load from database representation
             module = module_factory.from_workflow_step( trans, step )
@@ -1307,10 +1302,8 @@ class WorkflowController( BaseUIController, SharableMixin, UsesStoredWorkflowMix
                 module_data_inputs,
                 module_data_outputs,
             )
-
-        workflow_canvas.add_steps( )
-        workflow_canvas.finish(  )
-        return canvas
+        workflow_canvas.add_steps()
+        return workflow_canvas.finish()
 
 
 def _build_workflow_on_str(instance_ds_names):

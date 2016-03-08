@@ -1,5 +1,5 @@
 define([
-    "galaxy.masthead",
+    "layout/masthead",
     "utils/utils",
     "libs/toastr",
     "mvc/library/library-model",
@@ -28,6 +28,7 @@ var FolderListView = Backbone.View.extend({
     events: {
         'click #select-all-checkboxes'  : 'selectAll',
         'click .dataset_row'            : 'selectClickedRow',
+        'click .folder_row'             : 'selectClickedRow',
         'click .sort-folder-link'       : 'sortColumnClicked'
     },
 
@@ -101,7 +102,7 @@ var FolderListView = Backbone.View.extend({
           upper_folder_id = path[ path.length-2 ][ 0 ];
         }
 
-        this.$el.html( template( { 
+        this.$el.html( template( {
             path: this.folderContainer.attributes.metadata.full_path,
             parent_library_id: this.folderContainer.attributes.metadata.parent_library_id,
             id: this.options.id,
@@ -175,13 +176,8 @@ var FolderListView = Backbone.View.extend({
      */
     postRender: function(){
         var fetched_metadata = this.folderContainer.attributes.metadata;
-        fetched_metadata.contains_file = typeof this.collection.findWhere({type: 'file'}) !== 'undefined';
+        fetched_metadata.contains_file_or_folder = typeof this.collection.findWhere({type: 'file'}) !== 'undefined' || typeof this.collection.findWhere({type: 'folder'}) !== 'undefined';
         Galaxy.libraries.folderToolbarView.configureElements(fetched_metadata);
-        $('.library-row').hover(function() {
-          $(this).find('.show_on_hover').show();
-        }, function () {
-          $(this).find('.show_on_hover').hide();
-        });
     },
 
     /**
@@ -201,23 +197,17 @@ var FolderListView = Backbone.View.extend({
      * @param {Item or FolderAsModel} model of the view that will be rendered
      */
     renderOne: function(model){
-        if (model.get('type') !== 'folder'){
-            this.options.contains_file = true;
+        this.options.contains_file_or_folder = true;
+        //if (model.get('type') !== 'folder'){
             // model.set('readable_size', this.size_to_string(model.get('file_size')));
-          }
+        //}
         model.set('folder_id', this.id);
-        var rowView = new mod_library_folderrow_view.FolderRowView(model);
+        var rowView = new mod_library_folderrow_view.FolderRowView({model: model});
 
         // save new rowView to cache
         this.rowViews[model.get('id')] = rowView;
 
         this.$el.find('#first_folder_item').after(rowView.el);
-
-        $('.library-row').hover(function() {
-          $(this).find('.show_on_hover').show();
-        }, function () {
-          $(this).find('.show_on_hover').hide();
-        });
     },
 
     /**
@@ -225,7 +215,9 @@ var FolderListView = Backbone.View.extend({
      * @param {Item or FolderAsModel} model of the view that will be removed
      */
     removeOne: function( model ){
-       this.$el.find( '#' + model.id ).remove();
+       this.$el.find('tr').filter(function(){
+           return $(this).data('id') && $(this).data('id') === model.id;
+       }).remove();
     },
 
     /**
@@ -258,10 +250,15 @@ var FolderListView = Backbone.View.extend({
     },
 
     /**
-     *  Sorts the underlying collection according to the parameters received. 
-     *  Currently supports only sorting by name. 
+     *  Sorts the underlying collection according to the parameters received.
+     *  Currently supports only sorting by name.
      */
     sortFolder: function(sort_by, order){
+        console.log('sorting');
+        // default to asc sort by name
+        if (sort_by === 'undefined' && order === 'undefined'){
+            return this.collection.sortByNameAsc();
+        }
         if (sort_by === 'name'){
             if (order === 'asc'){
                 return this.collection.sortByNameAsc();
@@ -287,13 +284,13 @@ var FolderListView = Backbone.View.extend({
               that.makeDarkRow($row);
             } else {
               that.makeWhiteRow($row);
-            } 
+            }
         });
      },
 
-    /** 
-     * Check checkbox if user clicks on the whole row or 
-     *  on the checkbox itself 
+    /**
+     * Check checkbox if user clicks on the whole row or
+     *  on the checkbox itself
      */
     selectClickedRow : function (event) {
         var checkbox = '';
@@ -304,8 +301,8 @@ var FolderListView = Backbone.View.extend({
             $row = $(event.target.parentElement.parentElement);
             source = 'input';
         } else if (event.target.localName === 'td') {
-            checkbox = $("#" + event.target.parentElement.id).find(':checkbox')[0];
             $row = $(event.target.parentElement);
+            checkbox = $row.find(':checkbox')[0];
             source = 'td';
         }
         if (checkbox.checked){
@@ -329,12 +326,14 @@ var FolderListView = Backbone.View.extend({
         $row.removeClass('light').addClass('dark');
         $row.find('a').removeClass('light').addClass('dark');
         $row.find('.fa-file-o').removeClass('fa-file-o').addClass('fa-file');
+        $row.find('.fa-folder-o').removeClass('fa-folder-o').addClass('fa-folder');
     },
 
     makeWhiteRow: function($row){
         $row.removeClass('dark').addClass('light');
         $row.find('a').removeClass('dark').addClass('light');
         $row.find('.fa-file').removeClass('fa-file').addClass('fa-file-o');
+        $row.find('.fa-folder').removeClass('fa-folder').addClass('fa-folder-o');
     },
 
     renderSortIcon: function(){
@@ -366,6 +365,7 @@ var FolderListView = Backbone.View.extend({
         tmpl_array.push('       <th class="button_heading"></th>');
         tmpl_array.push('       <th style="text-align: center; width: 20px; " title="Check to select all datasets"><input id="select-all-checkboxes" style="margin: 0;" type="checkbox"></th>');
         tmpl_array.push('       <th><a class="sort-folder-link" title="Click to reverse order" href="#">name</a> <span title="Sorted alphabetically" class="sort-icon fa fa-sort-alpha-<%- order %>"></span></th>');
+        tmpl_array.push('       <th style="width:25%;">description</th>');
         tmpl_array.push('       <th style="width:5%;">data type</th>');
         tmpl_array.push('       <th style="width:10%;">size</th>');
         tmpl_array.push('       <th style="width:160px;">time updated (UTC)</th>');
@@ -380,6 +380,7 @@ var FolderListView = Backbone.View.extend({
         tmpl_array.push('           <td></td>');
         tmpl_array.push('           <td></td>');
         tmpl_array.push('           <td></td>');
+        tmpl_array.push('           <td></td>');
         tmpl_array.push('       </tr>');
 
         tmpl_array.push('   </tbody>');
@@ -388,7 +389,7 @@ var FolderListView = Backbone.View.extend({
 
         return _.template(tmpl_array.join(''));
     }
-    
+
 });
 
 return {

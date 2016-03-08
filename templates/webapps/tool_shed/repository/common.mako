@@ -2,34 +2,28 @@
     <script type="text/javascript">
         $(function(){
 
-            $("#tree").ajaxComplete(function(event, XMLHttpRequest, ajaxOptions) {
-                _log("debug", "ajaxComplete: %o", this); // dom element listening
-            });
             // --- Initialize sample trees
             $("#tree").dynatree({
                 title: "${repository.name}",
-                rootVisible: true,
-                minExpandLevel: 0, // 1: root node is not collapsible
+                minExpandLevel: 1,
                 persist: false,
                 checkbox: true,
                 selectMode: 3,
                 onPostInit: function(isReloading, isError) {
-                    //alert("reloading: "+isReloading+", error:"+isError);
-                    logMsg("onPostInit(%o, %o) - %o", isReloading, isError, this);
                     // Re-fire onActivate, so the text is updated
                     this.reactivate();
                 }, 
                 fx: { height: "toggle", duration: 200 },
                 // initAjax is hard to fake, so we pass the children as object array:
                 initAjax: {url: "${h.url_for( controller='repository', action='open_folder' )}",
-                           dataType: "json", 
-                           data: { folder_path: "${repository.repo_path( trans.app )}" },
+                           dataType: "json",
+                           data: { folder_path: "${repository.repo_path( trans.app )}", repository_id: "${trans.security.encode_id( repository.id )}"  },
                 },
                 onLazyRead: function(dtnode){
                     dtnode.appendAjax({
-                        url: "${h.url_for( controller='repository', action='open_folder' )}", 
+                        url: "${h.url_for( controller='repository', action='open_folder' )}",
                         dataType: "json",
-                        data: { folder_path: dtnode.data.key },
+                        data: { folder_path: dtnode.data.key, repository_id: "${trans.security.encode_id( repository.id )}"  },
                     });
                 },
                 onSelect: function(select, dtnode) {
@@ -62,7 +56,7 @@
                             type: "POST",
                             url: "${h.url_for( controller='repository', action='get_file_contents' )}",
                             dataType: "json",
-                            data: { file_path: selected_value },
+                            data: { file_path: selected_value, repository_id: "${trans.security.encode_id( repository.id )}" },
                             success : function ( data ) {
                                 cell.html( '<label>'+data+'</label>' )
                             }
@@ -1077,6 +1071,46 @@
     %>
 </%def>
 
+<%def name="render_tool_dependency_resolver( resolver_dependencies )">
+    <tr class="datasetRow">
+        <td style="padding-left: 20 px;">
+            <table class="grid" id="module_resolver_environment">
+               %if resolver_dependencies['model_class'] == 'NullDependency':
+                   <tr>
+                        <td><b> Dependency was not resolved by any resolver module.</b></td>
+                   </tr>
+               %else:
+                   <tr>
+                       <td><b>Dependency Resolver </b></td>
+                       <td> ${resolver_dependencies['model_class'] | h}</td>
+                   </tr>
+                   <tr>
+                       <td><b>Exact </b></td>
+                       <td> ${resolver_dependencies['exact'] | h}</td>
+                   </tr>
+                   <tr>
+                       <td><b>Dependency Type</b></td>
+                      <td> ${resolver_dependencies['dependency_type'] | h}</td>
+                   </tr>
+               %endif
+            </table>
+        </td>
+    </tr>
+</%def>
+
+<%def name="render_resolver_dependency_items( resolver_dependencies )">
+    %if resolver_dependencies:
+        <div class="toolForm">
+            <div class="toolFormTitle">Dependency Resolver Details</div>
+            <div class="toolFormBody">
+                <table cellspacing="2" cellpadding="2" border="0" width="100%" class="tables container-table" id="module_resolvers">
+                    ${render_tool_dependency_resolver( resolver_dependencies)}
+                </table>
+            </div>
+        </div>
+    %endif
+</%def>
+
 <%def name="render_repository_items( metadata, containers_dict, can_set_metadata=False, render_repository_actions_for='tool_shed' )">
     <%
         from tool_shed.util.encoding_util import tool_shed_encode
@@ -1231,7 +1265,7 @@
             </div>
         </div>
     %endif
-    %if tool_test_results_root_folder:
+    %if tool_test_results_root_folder and trans.app.config.display_legacy_test_results:
         ${render_table_wrap_style( "test_environment" )}
         <p/>
         <div class="toolForm">

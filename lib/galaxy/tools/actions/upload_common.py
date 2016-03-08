@@ -1,17 +1,18 @@
-import os
-import tempfile
-import StringIO
-import pwd
-import subprocess
-from cgi import FieldStorage
-from galaxy import datatypes, util
-from galaxy.util.odict import odict
-from galaxy.datatypes import sniff
-from galaxy.util.json import dumps
-from galaxy.model.orm import eagerload_all
-from galaxy.exceptions import ObjectInvalid
-
 import logging
+import os
+import pwd
+import StringIO
+import subprocess
+import tempfile
+from cgi import FieldStorage
+from json import dumps
+
+from sqlalchemy.orm import eagerload_all
+
+from galaxy import datatypes, util
+from galaxy.exceptions import ObjectInvalid
+from galaxy.util.odict import odict
+
 log = logging.getLogger( __name__ )
 
 
@@ -349,7 +350,7 @@ def create_paramfile( trans, uploaded_datasets ):
     return json_file_path
 
 
-def create_job( trans, params, tool, json_file_path, data_list, folder=None, history=None ):
+def create_job( trans, params, tool, json_file_path, data_list, folder=None, history=None, job_params=None ):
     """
     Create the upload job.
     """
@@ -394,7 +395,10 @@ def create_job( trans, params, tool, json_file_path, data_list, folder=None, his
             # open( dataset.file_name, "w" ).close()
     job.object_store_id = object_store_id
     job.set_state( job.states.NEW )
-    job.set_handler(tool.get_job_handler(None))
+    job.set_handler( tool.get_job_handler( None ) )
+    if job_params:
+        for name, value in job_params.iteritems():
+            job.add_parameter( name, value )
     trans.sa_session.add( job )
     trans.sa_session.flush()
 

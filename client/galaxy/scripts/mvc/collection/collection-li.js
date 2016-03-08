@@ -4,7 +4,8 @@ define([
     "mvc/base-mvc",
     "utils/localization"
 ], function( LIST_ITEM, DATASET_LI, BASE_MVC, _l ){
-/* global Backbone, LoggableMixin */
+
+'use strict';
 //==============================================================================
 var FoldoutListItemView = LIST_ITEM.FoldoutListItemView,
     ListItemView = LIST_ITEM.ListItemView;
@@ -33,11 +34,11 @@ var DCListItemView = FoldoutListItemView.extend(
     _setUpListeners : function(){
         FoldoutListItemView.prototype._setUpListeners.call( this );
         // re-rendering on deletion
-        this.model.on( 'change', function( model, options ){
+        this.listenTo( this.model, 'change', function( model, options ){
             if( _.isEqual( _.keys( model.changed ), [ 'deleted' ] ) ){
                 this.render();
             }
-        }, this );
+        });
     },
 
     // ......................................................................... rendering
@@ -193,6 +194,17 @@ var DatasetDCEListItemView = DATASET_LI.DatasetListItemView.extend(
         if( attributes.logger ){ this.logger = this.model.logger = attributes.logger; }
         this.log( 'DatasetDCEListItemView.initialize:', attributes );
         DATASET_LI.DatasetListItemView.prototype.initialize.call( this, attributes );
+    },
+
+    /** In this override, only get details if in the ready state.
+     *  Note: fetch with no 'change' event triggering to prevent automatic rendering.
+     */
+    _fetchModelDetails : function(){
+        var view = this;
+        if( view.model.inReadyState() && !view.model.hasDetails() ){
+            return view.model.fetch({ silent: true });
+        }
+        return jQuery.when();
     },
 
     // ......................................................................... misc

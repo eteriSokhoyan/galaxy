@@ -1,4 +1,6 @@
+import os
 import pipes
+import tempfile
 from galaxy import exceptions
 from galaxy.util.none_like import NoneDataset
 from galaxy.util import odict
@@ -9,12 +11,15 @@ log = getLogger( __name__ )
 
 # Fields in .log files corresponding to paths, must have one of the following
 # field names and all such fields are assumed to be paths. This is to allow
-# remote ComputeEnvironments (such as one used by LWR) determine what values to
+# remote ComputeEnvironments (such as one used by Pulsar) determine what values to
 # rewrite or transfer...
 PATH_ATTRIBUTES = [ "path" ]
+
+
 # ... by default though - don't rewrite anything (if no ComputeEnviornment
 # defined or ComputeEnvironment doesn't supply a rewriter).
-DEFAULT_PATH_REWRITER = lambda x: x
+def DEFAULT_PATH_REWRITER(x):
+    return x
 
 
 class ToolParameterValueWrapper( object ):
@@ -50,37 +55,11 @@ class RawObjectWrapper( ToolParameterValueWrapper ):
         try:
             return "%s:%s" % (self.obj.__module__, self.obj.__class__.__name__)
         except:
-            #Most likely None, which lacks __module__.
+            # Most likely None, which lacks __module__.
             return str( self.obj )
 
     def __getattr__( self, key ):
         return getattr( self.obj, key )
-
-
-class LibraryDatasetValueWrapper( ToolParameterValueWrapper ):
-    """
-    Wraps an input so that __str__ gives the "param_dict" representation.
-    """
-    def __init__( self, input, value, other_values={} ):
-        self.input = input
-        self.value = value
-        self._other_values = other_values
-        self.counter = 0
-
-    def __str__( self ):
-        return self.value
-
-    def __iter__( self ):
-        return self
-
-    def next( self ):
-        if self.counter >= len(self.value):
-            raise StopIteration
-        self.counter += 1
-        return self.value[ self.counter - 1 ]
-
-    def __getattr__( self, key ):
-        return getattr( self.value, key )
 
 
 class InputValueWrapper( ToolParameterValueWrapper ):
@@ -92,8 +71,29 @@ class InputValueWrapper( ToolParameterValueWrapper ):
         self.value = value
         self._other_values = other_values
 
+    def __eq__( self, other ):
+        if isinstance( other, basestring ):
+            return str( self ) == other
+        elif isinstance( other, int ):
+            return int( self ) == other
+        elif isinstance( other, float ):
+            return float( self ) == other
+        else:
+            return super( InputValueWrapper, self ) == other
+
     def __str__( self ):
-        return self.input.to_param_dict_string( self.value, self._other_values )
+        to_param_dict_string = self.input.to_param_dict_string( self.value, self._other_values )
+        if isinstance( to_param_dict_string, list ):
+            return ','.join( to_param_dict_string )
+        else:
+            return to_param_dict_string
+
+    def __iter__( self ):
+        to_param_dict_string = self.input.to_param_dict_string( self.value, self._other_values )
+        if not isinstance( to_param_dict_string, list ):
+            return iter( [ to_param_dict_string ] )
+        else:
+            return iter( to_param_dict_string )
 
     def __getattr__( self, key ):
         return getattr( self.value, key )
@@ -140,6 +140,12 @@ class SelectToolParameterWrapper( ToolParameterValueWrapper ):
         self._path_rewriter = path_rewriter or DEFAULT_PATH_REWRITER
         self.fields = self.SelectToolParameterFieldWrapper( input, value, other_values, self._path_rewriter )
 
+    def __eq__( self, other ):
+        if isinstance( other, basestring ):
+            return str( self ) == other
+        else:
+            return super( SelectToolParameterWrapper, self ) == other
+
     def __str__( self ):
         # Assuming value is never a path - otherwise would need to pass
         # along following argument value_map=self._path_rewriter.
@@ -174,7 +180,7 @@ class DatasetFilenameWrapper( ToolParameterValueWrapper ):
                 # again
                 setattr( self, name, rval )
             else:
-                #escape string value of non-defined metadata value
+                # escape string value of non-defined metadata value
                 rval = wrap_with_safe_string( rval )
             return rval
 
@@ -202,7 +208,7 @@ class DatasetFilenameWrapper( ToolParameterValueWrapper ):
                 ext = 'data'
             self.dataset = wrap_with_safe_string( NoneDataset( datatypes_registry=datatypes_registry, ext=ext ), no_wrap_classes=ToolParameterValueWrapper )
         else:
-            # Tool wrappers should not normally be accessing .dataset directly, 
+            # Tool wrappers should not normally be accessing .dataset directly,
             # so we will wrap it and keep the original around for file paths
             # Should we name this .value to maintain consistency with most other ToolParameterValueWrapper?
             self.unsanitized = dataset
@@ -275,11 +281,18 @@ class HasDatasets:
                 wrapper_kwds[ "dataset_path" ] = dataset_paths[ real_path ]
         return DatasetFilenameWrapper( dataset, **wrapper_kwds )
 
+    def paths_as_file(self, sep="\n"):
+        handle, filepath = tempfile.mkstemp(prefix="gx_file_list", dir=self.job_working_directory)
+        contents = sep.join(map(str, self))
+        os.write(handle, contents)
+        os.close(handle)
+        return filepath
+
 
 class DatasetListWrapper( list, ToolParameterValueWrapper, HasDatasets ):
     """
     """
-    def __init__( self, datasets, dataset_paths=[], **kwargs ):
+    def __init__( self, job_working_directory, datasets, dataset_paths=[], **kwargs ):
         if not isinstance(datasets, list):
             datasets = [datasets]
 
@@ -291,14 +304,31 @@ class DatasetListWrapper( list, ToolParameterValueWrapper, HasDatasets ):
             return self._dataset_wrapper( dataset, dataset_paths, **kwargs )
 
         list.__init__( self, map( to_wrapper, datasets ) )
+        self.job_working_directory = job_working_directory
+
+    @staticmethod
+    def to_dataset_instances( dataset_instance_sources ):
+        dataset_instances = []
+        if not isinstance( dataset_instance_sources, list ):
+            dataset_instance_sources = [ dataset_instance_sources ]
+        for dataset_instance_source in dataset_instance_sources:
+            if dataset_instance_source is None:
+                dataset_instances.append( dataset_instance_source )
+            elif dataset_instance_source.history_content_type == "dataset":
+                dataset_instances.append( dataset_instance_source )
+            else:
+                dataset_instances.extend( dataset_instance_source.collection.dataset_elements )
+        return dataset_instances
+
     def __str__( self ):
         return ','.join( map( str, self ) )
 
 
 class DatasetCollectionWrapper( ToolParameterValueWrapper, HasDatasets ):
 
-    def __init__( self, has_collection, dataset_paths=[], **kwargs ):
+    def __init__( self, job_working_directory, has_collection, dataset_paths=[], **kwargs ):
         super(DatasetCollectionWrapper, self).__init__()
+        self.job_working_directory = job_working_directory
 
         if has_collection is None:
             self.__input_supplied = False
@@ -327,7 +357,7 @@ class DatasetCollectionWrapper( ToolParameterValueWrapper, HasDatasets ):
             element_identifier = dataset_collection_element.element_identifier
 
             if dataset_collection_element.is_collection:
-                element_wrapper = DatasetCollectionWrapper( dataset_collection_element, dataset_paths, **kwargs )
+                element_wrapper = DatasetCollectionWrapper(job_working_directory, dataset_collection_element, dataset_paths, **kwargs )
             else:
                 element_wrapper = self._dataset_wrapper( element_object, dataset_paths, **kwargs)
 

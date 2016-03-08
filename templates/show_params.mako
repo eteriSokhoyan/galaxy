@@ -1,5 +1,6 @@
 <%inherit file="/base.mako"/>
 <%namespace file="/message.mako" import="render_msg" />
+<% from galaxy.util import listify %>
 <% from galaxy.util import nice_size %>
 
 <style>
@@ -22,6 +23,13 @@
                 %for i in range( len(param_values[input.name]) ):
                     ${ inputs_recursive(input.inputs, param_values[input.name][i], depth=depth+1) }
                 %endfor
+            %elif input.type == "section":
+                <tr>
+                    ##<!-- Get the value of the current Section parameter -->
+                    ${inputs_recursive_indent( text=input.name, depth=depth )}
+                    <td></td>
+                </tr>
+                ${ inputs_recursive( input.inputs, param_values[input.name], depth=depth+1, upgrade_messages=upgrade_messages.get( input.name ) ) }
             %elif input.type == "conditional":
                 <%
                 try:
@@ -52,7 +60,31 @@
                         <td>${ len( param_values[input.name] ) } uploaded datasets</td>
                         <td></td>
                     </tr>
-            %elif input.visible:
+            ## files used for inputs
+            %elif input.type == "data":
+                    <tr>
+                        ${inputs_recursive_indent( text=input.label, depth=depth )}
+                        <td>
+                        %for i, element in enumerate(listify(param_values[input.name])):
+                        %if i > 0:
+                        ,
+                        %endif
+                        %if element.history_content_type == "dataset":
+                        <%
+                            hda = element
+                            encoded_id = trans.security.encode_id( hda.id )
+                            show_params_url = h.url_for( controller='dataset', action='show_params', dataset_id=encoded_id )
+                        %>
+                        <a class="input-dataset-show-params" data-hda-id="${encoded_id}"
+                               href="${show_params_url}">${hda.name | h}</a>
+                        %else:
+                        ${element.hid}: ${element.name | h}
+                        %endif
+                        %endfor
+                        </td>
+                        <td></td>
+                    </tr>
+             %elif input.visible:
                 <%
                 if  hasattr( input, "label" ) and input.label:
                     label = input.label
@@ -125,8 +157,11 @@
         %if job:
             <tr><td>Tool Exit Code:</td><td>${ job.exit_code | h }</td></tr>
         %endif
-        <tr><td>API ID:</td><td>${encoded_hda_id}</td></tr>
-        <tr><td>History ID:</td><td>${encoded_history_id}</td></tr>
+        <tr><td>History Content API ID:</td><td>${encoded_hda_id}</td></tr>
+        %if job:
+            <tr><td>Job API ID:</td><td>${trans.security.encode_id( job.id )}</td></tr>
+        %endif
+        <tr><td>History API ID:</td><td>${encoded_history_id}</td></tr>
         %if hda.dataset.uuid:
         <tr><td>UUID:</td><td>${hda.dataset.uuid}</td></tr>
         %endif
@@ -168,6 +203,17 @@
     <br />
     ${ render_msg( 'One or more of your original parameters may no longer be valid or displayed properly.', status='warning' ) }
 %endif
+
+<script type="text/javascript">
+$(function(){
+    $( '.input-dataset-show-params' ).on( 'click', function( ev ){
+        ## some acrobatics to get the Galaxy object that has a history from the contained frame
+        if( window.parent.Galaxy && window.parent.Galaxy.currHistoryPanel ){
+            window.parent.Galaxy.currHistoryPanel.scrollToId( 'dataset-' + $( this ).data( 'hda-id' ) );
+        }
+    })
+});
+</script>
 
     <h3>Inheritance Chain</h3>
     <div class="inherit" style="background-color: #fff; font-weight:bold;">${hda.name | h}</div>

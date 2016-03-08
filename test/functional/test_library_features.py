@@ -1,33 +1,55 @@
-from base.twilltestcase import *
-from base.test_db_util import *
+import os
+
+from base.twilltestcase import TwillTestCase
+from base.test_db_util import library1, \
+    get_user, \
+    get_private_role, \
+    refresh, \
+    get_library, \
+    get_folder, \
+    escape, \
+    folder1, \
+    folder2, \
+    subfolder1, \
+    get_latest_ldda_by_name, \
+    ldda4, \
+    get_latest_hda, \
+    regular_user1, \
+    admin_user, \
+    regular_user1_private_role, \
+    regular_user3_private_role, \
+    regular_user3, \
+    ldda2, \
+    library2, \
+    ldda7, \
+    folder5, \
+    folder4, \
+    library3, \
+    regular_user2
 
 
 class TestLibraryFeatures( TwillTestCase ):
 
     def test_000_initiate_users( self ):
         """Ensuring all required user accounts exist"""
-        self.logout()
         self.login( email='test1@bx.psu.edu', username='regular-user1' )
         global regular_user1
         regular_user1 = get_user( 'test1@bx.psu.edu' )
         assert regular_user1 is not None, 'Problem retrieving user with email "test1@bx.psu.edu" from the database'
         global regular_user1_private_role
         regular_user1_private_role = get_private_role( regular_user1 )
-        self.logout()
         self.login( email='test2@bx.psu.edu', username='regular-user2' )
         global regular_user2
         regular_user2 = get_user( 'test2@bx.psu.edu' )
         assert regular_user2 is not None, 'Problem retrieving user with email "test2@bx.psu.edu" from the database'
         global regular_user2_private_role
         regular_user2_private_role = get_private_role( regular_user2 )
-        self.logout()
         self.login( email='test3@bx.psu.edu', username='regular-user3' )
         global regular_user3
         regular_user3 = get_user( 'test3@bx.psu.edu' )
         assert regular_user3 is not None, 'Problem retrieving user with email "test3@bx.psu.edu" from the database'
         global regular_user3_private_role
         regular_user3_private_role = get_private_role( regular_user3 )
-        self.logout()
         self.login( email='test@bx.psu.edu', username='admin-user' )
         global admin_user
         admin_user = get_user( 'test@bx.psu.edu' )
@@ -59,19 +81,19 @@ class TestLibraryFeatures( TwillTestCase ):
         new_description = "library1 new description"
         new_synopsis = "library1 new synopsis"
         self.library_info( 'library_admin',
-                            self.security.encode_id( library1.id ),
-                            library1.name,
-                            new_name=new_name,
-                            new_description=new_description,
-                            new_synopsis=new_synopsis )
+                           self.security.encode_id( library1.id ),
+                           library1.name,
+                           new_name=new_name,
+                           new_description=new_description,
+                           new_synopsis=new_synopsis )
         self.browse_libraries_admin( strings_displayed=[ new_name, new_description ] )
         # Reset the library back to the original name and description
         self.library_info( 'library_admin',
-                            self.security.encode_id( library1.id ),
-                            library1.name,
-                            new_name='library1',
-                            new_description='library1 description',
-                            new_synopsis='library1 synopsis' )
+                           self.security.encode_id( library1.id ),
+                           library1.name,
+                           new_name='library1',
+                           new_description='library1 description',
+                           new_synopsis='library1 synopsis' )
         refresh( library1 )
 
     def test_030_add_folder_to_library1( self ):
@@ -149,7 +171,7 @@ class TestLibraryFeatures( TwillTestCase ):
     def test_050_add_2nd_public_dataset_to_folder2( self ):
         """Testing adding a 2nd public dataset folder2"""
         # Logged in as admin_user
-        filename='3.bed'
+        filename = '3.bed'
         ldda_message = "Testing uploading %s" % filename
         self.upload_library_dataset( cntrller='library_admin',
                                      library_id=self.security.encode_id( library1.id ),
@@ -253,7 +275,6 @@ class TestLibraryFeatures( TwillTestCase ):
                                   role_ids,
                                   permissions_in,
                                   permissions_out )
-        self.logout()
         # Now that we have permissions set on the library, we can proceed to test uploading files
         self.login( email=regular_user1.email )
         ldda_message = 'Uploaded all files in test-data/users/test1...'
@@ -266,8 +287,7 @@ class TestLibraryFeatures( TwillTestCase ):
                                      upload_option='upload_directory',
                                      server_dir=regular_user1.email,
                                      ldda_message=ldda_message,
-                                     strings_displayed = [ "Upload a directory of files" ] )
-        self.logout()
+                                     strings_displayed=[ "Upload a directory of files" ] )
         self.login( regular_user3.email )
         ldda_message = 'Uploaded all files in test-data/users/test3.../run1'
         # Since regular_user2 has a subdirectory contained within her configured user_library_import_dir,
@@ -283,7 +303,6 @@ class TestLibraryFeatures( TwillTestCase ):
     def test_075_download_archive_of_library_files( self ):
         """Testing downloading an archive of files from library1"""
         # logged in as regular_user3
-        self.logout()
         self.login( email=admin_user.email )
         filename = '1.bed'
         self.upload_library_dataset( cntrller='library_admin',
@@ -413,7 +432,7 @@ class TestLibraryFeatures( TwillTestCase ):
         refresh( library1 )
         if not ( library1.deleted and library1.purged ):
             raise AssertionError( 'The library id %s named "%s" has not been marked as deleted and purged.' % ( str( library1.id ), library1.name ) )
-    
+
         def check_folder( library_folder ):
             for folder in library_folder.folders:
                 refresh( folder )
@@ -429,16 +448,16 @@ class TestLibraryFeatures( TwillTestCase ):
                 if ldda:
                     refresh( ldda )
                     if not ldda.deleted:
-                        raise AssertionError( 'The library_dataset_dataset_association id %s named "%s" has not been marked as deleted.' % \
+                        raise AssertionError( 'The library_dataset_dataset_association id %s named "%s" has not been marked as deleted.' %
                                               ( str( ldda.id ), ldda.name ) )
                     # Make sure all of the datasets have been deleted
                     dataset = ldda.dataset
                     refresh( dataset )
                     if not dataset.deleted:
-                        raise AssertionError( 'The dataset with id "%s" has not been marked as deleted when it should have been.' % \
+                        raise AssertionError( 'The dataset with id "%s" has not been marked as deleted when it should have been.' %
                                               str( ldda.dataset.id ) )
                 if not library_dataset.deleted:
-                    raise AssertionError( 'The library_dataset id %s named "%s" has not been marked as deleted.' % \
+                    raise AssertionError( 'The library_dataset id %s named "%s" has not been marked as deleted.' %
                                           ( str( library_dataset.id ), library_dataset.name ) )
         check_folder( library1.root_folder )
 
@@ -600,4 +619,3 @@ class TestLibraryFeatures( TwillTestCase ):
             refresh( user )
             if len( user.roles) != 1:
                 raise AssertionError( '%d UserRoleAssociations are associated with %s ( should be 1 )' % ( len( user.roles ), user.email ) )
-        self.logout()

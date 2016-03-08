@@ -14,7 +14,6 @@ class UploadData( TwillTestCase ):
         """
         Configuring upload tests, setting admin_user
         """
-        self.logout()
         self.login( email='test@bx.psu.edu' )
         global admin_user
         admin_user = get_user( email='test@bx.psu.edu' )
@@ -214,7 +213,7 @@ class UploadData( TwillTestCase ):
         history = self.create_fresh_history( admin_user )
 
         # lped data types include a ped_file and a map_file ( which is binary )
-        self.upload_file( None, ftype='lped', metadata=[ { 'name':'base_name', 'value':'rgenetics' } ], composite_data=[ { 'name':'ped_file', 'value':'tinywga.ped' }, { 'name':'map_file', 'value':'tinywga.map'} ] )
+        self.upload_file( None, ftype='lped', metadata=[ { 'name': 'base_name', 'value': 'rgenetics' } ], composite_data=[ { 'name': 'ped_file', 'value': 'tinywga.ped' }, { 'name': 'map_file', 'value': 'tinywga.map'} ] )
         # Get the latest hid for testing
         hda = get_latest_hda()
         assert hda is not None, "Problem retrieving hda from database"
@@ -234,7 +233,7 @@ class UploadData( TwillTestCase ):
         history = self.create_fresh_history( admin_user )
 
         # lped data types include a ped_file and a map_file ( which is binary )
-        self.upload_file( None, ftype='lped', metadata=[ { 'name':'base_name', 'value':'rgenetics' } ], composite_data=[ { 'name':'ped_file', 'value':'tinywga.ped', 'space_to_tab':True }, { 'name':'map_file', 'value':'tinywga.map'} ] )
+        self.upload_file( None, ftype='lped', metadata=[ { 'name': 'base_name', 'value': 'rgenetics' } ], composite_data=[ { 'name': 'ped_file', 'value': 'tinywga.ped', 'space_to_tab': True }, { 'name': 'map_file', 'value': 'tinywga.map'} ] )
         # Get the latest hid for testing
         hda = get_latest_hda()
         assert hda is not None, "Problem retrieving hda from database"
@@ -255,11 +254,11 @@ class UploadData( TwillTestCase ):
 
         # pbed data types include a bim_file, a bed_file and a fam_file
         self.upload_file( None, ftype='pbed',
-            metadata=[ { 'name':'base_name', 'value':'rgenetics' } ],
+            metadata=[ { 'name': 'base_name', 'value': 'rgenetics' } ],
             composite_data=[
-                { 'name':'bim_file', 'value':'tinywga.bim' },
-                { 'name':'bed_file', 'value':'tinywga.bed' },
-                { 'name':'fam_file', 'value':'tinywga.fam' } ])
+                { 'name': 'bim_file', 'value': 'tinywga.bim' },
+                { 'name': 'bed_file', 'value': 'tinywga.bed' },
+                { 'name': 'fam_file', 'value': 'tinywga.fam' } ])
         # Get the latest hid for testing
         hda = get_latest_hda()
         assert hda is not None, "Problem retrieving hda from database"
@@ -634,6 +633,3 @@ class UploadData( TwillTestCase ):
         self.check_metadata_for_string( 'value="1.bigwig" value="\?" Change data type selected value="bigwig" selected="yes"' )
 
         self.delete_history( id=self.security.encode_id( history.id ) )
-
-    def test_9999_clean_up( self ):
-        self.logout()

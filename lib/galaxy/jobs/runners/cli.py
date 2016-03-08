@@ -2,7 +2,6 @@
 Job control via a command line interface (e.g. qsub/qstat), possibly over a remote connection (e.g. ssh).
 """
 
-import os
 import logging
 
 from galaxy import model
@@ -53,9 +52,6 @@ class ShellJobRunner( AsynchronousJobRunner ):
         if not self.prepare_job( job_wrapper, include_metadata=True ):
             return
 
-        # command line has been added to the wrapper by prepare_job()
-        command_line = job_wrapper.runner_command_line
-
         # Get shell and job execution interface
         job_destination = job_wrapper.job_destination
         shell_params, job_params = self.parse_destination_params(job_destination.params)
@@ -75,9 +71,7 @@ class ShellJobRunner( AsynchronousJobRunner ):
         )
 
         try:
-            fh = file(ajs.job_file, "w")
-            fh.write(script)
-            fh.close()
+            self.write_executable_script( ajs.job_file, script )
         except:
             log.exception("(%s) failure writing job script" % galaxy_id_tag )
             job_wrapper.fail("failure preparing job script", exception=True)
@@ -86,7 +80,7 @@ class ShellJobRunner( AsynchronousJobRunner ):
         # job was deleted while we were preparing it
         if job_wrapper.get_state() == model.Job.states.DELETED:
             log.info("(%s) Job deleted by user before it entered the queue" % galaxy_id_tag )
-            if self.app.config.cleanup_job in ("always", "onsuccess"):
+            if job_wrapper.cleanup_job in ("always", "onsuccess"):
                 job_wrapper.cleanup()
             return
 
@@ -98,7 +92,7 @@ class ShellJobRunner( AsynchronousJobRunner ):
             log.error('(%s) submission failed (stderr): %s' % (galaxy_id_tag, cmd_out.stderr))
             job_wrapper.fail("failure submitting job")
             return
-        # Some job runners return something like 'Submitted batch job XXXX' 
+        # Some job runners return something like 'Submitted batch job XXXX'
         # Strip and split to get job ID.
         external_job_id = cmd_out.stdout.strip().split()[-1]
         if not external_job_id:
@@ -181,18 +175,6 @@ class ShellJobRunner( AsynchronousJobRunner ):
             job_states.update(job_interface.parse_status(cmd_out.stdout, job_ids))
         return job_states
 
-    def finish_job( self, job_state ):
-        """For recovery of jobs started prior to standardizing the naming of
-        files in the AsychronousJobState object
-        """
-        old_ofile = "%s.gjout" % os.path.join(job_state.job_wrapper.working_directory, job_state.job_wrapper.get_id_tag())
-        if os.path.exists( old_ofile ):
-            job_state.output_file = old_ofile
-            job_state.error_file = "%s.gjerr" % os.path.join(job_state.job_wrapper.working_directory, job_state.job_wrapper.get_id_tag())
-            job_state.exit_code_file = "%s.gjec" % os.path.join(job_state.job_wrapper.working_directory, job_state.job_wrapper.get_id_tag())
-            job_state.job_file = "%s/galaxy_%s.sh" % (self.app.config.cluster_files_directory, job_state.job_wrapper.get_id_tag())
-        super( ShellJobRunner, self ).finish_job( job_state )
-
     def stop_job( self, job ):
         """Attempts to delete a dispatched job"""
         try:
@@ -201,7 +183,7 @@ class ShellJobRunner( AsynchronousJobRunner ):
             cmd_out = shell.execute(job_interface.delete( job.job_runner_external_id ))
             assert cmd_out.returncode == 0, cmd_out.stderr
             log.debug( "(%s/%s) Terminated at user's request" % ( job.id, job.job_runner_external_id ) )
-        except Exception, e:
+        except Exception as e:
             log.debug( "(%s/%s) User killed running job, but error encountered during termination: %s" % ( job.id, job.job_runner_external_id, e ) )
 
     def recover( self, job, job_wrapper ):

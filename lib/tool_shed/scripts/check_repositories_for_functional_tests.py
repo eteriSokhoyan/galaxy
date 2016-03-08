@@ -1,34 +1,28 @@
 #!/usr/bin/env python
 
-import os
-import sys
-
-new_path = [ os.path.join( os.getcwd(), "lib" ),
-             os.path.join( os.getcwd(), "test" ) ]
-new_path.extend( sys.path[ 1: ] )
-sys.path = new_path
-
-from galaxy import eggs
-eggs.require( "SQLAlchemy >= 0.4" )
-eggs.require( 'mercurial' )
-
 import ConfigParser
-import galaxy.webapps.tool_shed.config as tool_shed_config
-from tool_shed.util import hg_util
-import tool_shed.util.shed_util_common as suc
 import logging
+import os
 import shutil
+import sys
 import tempfile
 import time
+from optparse import OptionParser
+from time import strftime
 
+sys.path[1:1] = [ os.path.join( os.path.dirname( __file__ ), os.pardir, os.pardir ),
+                  os.path.join( os.path.dirname( __file__ ), os.pardir, os.pardir, os.pardir, 'test' ) ]
+
+from mercurial import __version__
+from sqlalchemy import and_, false, true
+
+import galaxy.webapps.tool_shed.config as tool_shed_config
+import tool_shed.util.shed_util_common as suc
+from galaxy.util import listify
 from install_and_test_tool_shed_repositories.base.util import get_database_version
 from install_and_test_tool_shed_repositories.base.util import get_repository_current_revision
 from install_and_test_tool_shed_repositories.base.util import RepositoryMetadataApplication
-from galaxy.model.orm import and_
-from galaxy.util import listify
-from mercurial import __version__
-from optparse import OptionParser
-from time import strftime
+from tool_shed.util import hg_util
 
 log = logging.getLogger( 'check_repositories_for_functional_tests' )
 assert sys.version_info[ :2 ] >= ( 2, 6 )
@@ -79,9 +73,9 @@ def check_and_update_repository_metadata( app, info_only=False, verbosity=1 ):
     # since there's no need to check them again if they won't be tested anyway. Also filter out changeset revisions that are not downloadable,
     # because it's redundant to test a revision that a user can't install.
     for repository_metadata in app.sa_session.query( app.model.RepositoryMetadata ) \
-                                             .filter( and_( app.model.RepositoryMetadata.table.c.downloadable == True,
-                                                            app.model.RepositoryMetadata.table.c.includes_tools == True,
-                                                            app.model.RepositoryMetadata.table.c.do_not_test == False ) ):
+                                             .filter( and_( app.model.RepositoryMetadata.table.c.downloadable == true(),
+                                                            app.model.RepositoryMetadata.table.c.includes_tools == true(),
+                                                            app.model.RepositoryMetadata.table.c.do_not_test == false() ) ):
         # Initialize some items.
         missing_test_components = []
         revision_has_test_data = False
@@ -335,7 +329,7 @@ def main():
         ini_file = args[ 0 ]
     except IndexError:
         print "Usage: python %s <tool shed .ini file> [options]" % sys.argv[ 0 ]
-        exit( 127 )
+        sys.exit( 127 )
     config_parser = ConfigParser.ConfigParser( { 'here': os.getcwd() } )
     config_parser.read( ini_file )
     config_dict = {}
@@ -367,7 +361,7 @@ def should_set_do_not_test_flag( app, repository, changeset_revision, testable_r
     """
     if not testable_revision:
         repo = hg_util.get_repo_for_repository( app, repository=repository, repo_path=None, create=False )
-        changeset_revisions = suc.get_ordered_metadata_changeset_revisions( repository, repo, downloadable=True )
+        changeset_revisions = [ revision[ 1 ] for revision in suc.get_metadata_revisions( repository, repo ) ]
         if len( changeset_revisions ) > 1:
             latest_downloadable_revision = changeset_revisions[ -1 ]
             if changeset_revision != latest_downloadable_revision:
