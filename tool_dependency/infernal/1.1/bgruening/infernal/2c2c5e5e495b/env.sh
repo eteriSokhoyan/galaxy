@@ -1,0 +1,1 @@
+if [ -f /home/eteri/GalaxyProject/galaxy/tool_dependency/infernal/1.1/iuc/package_infernal_1_1/2bac556aa73f/env.sh ] ; then . /home/eteri/GalaxyProject/galaxy/tool_dependency/infernal/1.1/iuc/package_infernal_1_1/2bac556aa73f/env.sh ; fi

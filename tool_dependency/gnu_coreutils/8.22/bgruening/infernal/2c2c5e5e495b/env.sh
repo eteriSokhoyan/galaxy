@@ -1,0 +1,1 @@
+if [ -f /home/eteri/GalaxyProject/galaxy/tool_dependency/gnu_coreutils/8.22/iuc/package_gnu_coreutils_8_22/ac64dfe4b1fb/env.sh ] ; then . /home/eteri/GalaxyProject/galaxy/tool_dependency/gnu_coreutils/8.22/iuc/package_gnu_coreutils_8_22/ac64dfe4b1fb/env.sh ; fi

@@ -1,0 +1,2 @@
+PATH=/home/eteri/GalaxyProject/galaxy/tool_dependency/gnu_coreutils/8.22/iuc/package_gnu_coreutils_8_22/ac64dfe4b1fb/bin:$PATH; export PATH
+GNU_COREUTILS_ROOT_DIR=/home/eteri/GalaxyProject/galaxy/tool_dependency/gnu_coreutils/8.22/iuc/package_gnu_coreutils_8_22/ac64dfe4b1fb; export GNU_COREUTILS_ROOT_DIR
