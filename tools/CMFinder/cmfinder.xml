@@ -3,19 +3,25 @@
     <stdio>
         <exit_code range="1:" />
     </stdio>
-    <command interpreter="perl">cmfinder.pl $input1</command>
+    <command>
+<![CDATA[
+		tmp_cm_file=\$(mktemp);
+		cmfinder --g 1.0 -a $input1 $input2 \$tmp_cm_file > $output1
+]]>		
+	</command>
     <inputs>
-        <param type="data" name="input1" format="fasta" />
+        <param type="data" name="input1" format="stk" />
+        <param type="data" name="input2" format="fasta" />
     </inputs>
     <outputs>
-        <data name="output1" format="stk" />
+        <data name="output1" format="stk" label = "output"  />
     </outputs>
-    <tests>
+    <!--tests>
         <test>
             <param name="input1" value="data.fasta"/>
             <output name="output1" file="seq.fasta.summary"/>
         </test>
-    </tests>
+    </tests-->
     <help><![CDATA[
         cmfinder.pl [options] SEQ
 Options:
