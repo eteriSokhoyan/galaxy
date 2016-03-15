@@ -6,22 +6,43 @@
     <command>
 <![CDATA[
 		tmp_cm_file=\$(mktemp);
-		cmfinder --g 1.0 -a $input1 $input2 \$tmp_cm_file > $output1
+		cmfinder 
+		
+		$gap_threshold_opts.gap_threshold_opts_selector
+            #if $gap_threshold_opts.gap_threshold_opts_selector == '--g':
+                $gap_threshold_opts.gap
+            #end if
+		
+		-a $input1 $input2 \$tmp_cm_file > $output1
 ]]>		
 	</command>
     <inputs>
         <param type="data" name="input1" format="stk" />
-        <param type="data" name="input2" format="fasta" />
+        <param type="data" name="the initial motif alignment (-a)" format="fasta" />
+        
+        <conditional name="gap_threshold_opts">
+                <param name="gap_threshold_opts_selector" type="select" label="Use gap threshold" help="">
+                    <option value="--g" selected="true">Yes (--g)</option>
+                    <option value="">No</option>
+                </param>
+                <when value="--g">
+                    <param name="gap" type="float" value="1.0" size="5"
+                        label="Define the gap threshold to determine the conserved column (--g)" help=""/>
+                </when>
+                <when value=""/>
+            </conditional>
+                        
     </inputs>
     <outputs>
         <data name="output1" format="stk" label = "output"  />
     </outputs>
-    <!--tests>
+    <tests>
         <test>
-            <param name="input1" value="data.fasta"/>
-            <output name="output1" file="seq.fasta.summary"/>
+            <param name="input1" value="model.tree.stk"/>
+            <param name="input2" value="cmfinder.fa"/>
+            <output name="output1" file="out.stk"/>
         </test>
-    </tests-->
+    </tests>
     <help><![CDATA[
         cmfinder.pl [options] SEQ
 Options:
