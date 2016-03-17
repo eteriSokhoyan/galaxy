@@ -5,22 +5,24 @@
     </stdio>
     <command>
 <![CDATA[
-		NSPDK -no-cache -rs 1 -fsb  $input1 -bl $input2 -ensf 5 -oc -usn -msb 1 -knn 20 -ss 100 -nhf 500 -mi 0 -fcs 1 > $output1
+		
+		NSPDK -R 3 -D 3 -gt DIRECTED -fg $input1 -of ;
+		$input1+=".feature_bin";
+		cat $input1 > $output1
 
 ]]>			
 	</command>
     <inputs>
         <param type="data" name="input1" format="txt" />
-        <param type="data" name="input2" format="txt" />
     </inputs>
     <outputs>
-        <data name="output1" format="txt" label = "output"  />
+        <data name="output1" format="txt" label = "data_svector"  />
     </outputs>
     <tests>
         <test>
-            <param name="input1" value="data.svector"/>
-            <param name="input2" value="data.svector.blacklist.2"/>
-            <output name="output1" file="out"/>
+            <param name="input1" value="1.group.gspan"/>
+            <output name="output1" file="data.svector.1"/>
+            
         </test>
     </tests>
     <help>
