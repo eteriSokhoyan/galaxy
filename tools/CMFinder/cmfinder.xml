@@ -27,7 +27,13 @@
                 </param>
                 <when value="--g">
                     <param name="gap" type="float" value="1.0" size="5"
-                        label="Define the gap threshold to determine the conserved column (--g)" help=""/>
+                        label="Define the gap threshold to determine the conserved column (--g)" help="">
+                        <sanitizer>
+                <valid initial="string.printable">
+                   <remove value="&apos;"/>
+                </valid>
+            </sanitizer>
+                        </param>
                 </when>
                 <when value=""/>
             </conditional>

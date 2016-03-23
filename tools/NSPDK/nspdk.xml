@@ -1,4 +1,4 @@
-<tool id="nspdk" name="NSPDK_cand_cluster" version="9.2">
+<tool id="nspdk" name="NSPDK" version="9.2">
    <!--parallelism method="multi" split_inputs="input1" split_mode="to_size" split_size="10" shared_inputs="" merge_outputs="output1, output2"></parallelism-->
    
     <stdio>
@@ -11,13 +11,22 @@
 		NSPDK -R 3 -D 3 -gt DIRECTED -fg gspan -of &&
 
 		NSPDK
-		 -no-cache 
+		 $noCache 
+		 -rs 2
 		 -fsb gspan.feature_bin 
-		 -ensf 5 
-		 $oc 
-		 -usn
-
-		##&&
+		 
+		 -knn $knn
+		 
+		 #if $eccess_neighbour_size_factor_opts.eccess_neighbour_size_factor_opts_selector == "-ensf":
+              -ensf $eccess_neighbour_size_factor_opts.size
+	    #end if
+		
+		-ss $sample_size
+		-nhf $nhf
+		
+		 -oc
+		 $usn 
+		 
 		##mv gspan.feature_bin $output1
 
 ]]>			
@@ -25,8 +34,53 @@
     <inputs>
         <param type="data" name="input1" format="gspan" />
         
-         <param name="oc" truevalue="-oc" falsevalue="" checked="True" type="boolean"
-                label="Flag to output clusters (-oc)" help="by default true"/>
+         <param name="usn" truevalue="-usn" falsevalue="" checked="True" type="boolean"
+                label="Use shared neighbourhood to weight center density (-usn)" help="by default true"/>
+         <param name="noCache" truevalue="-no-cache" falsevalue="" checked="True" type="boolean"
+                label="Deactivate caching of kernel value computation  (-no-cache)" help="to minimize memory usage"/>
+         
+         <conditional name="eccess_neighbour_size_factor_opts">
+                <param name="eccess_neighbour_size_factor_opts_selector" type="select" label="Eccess neighbour size factor" help="">
+                    <option value="-ensf" selected="true">Yes (-ensf)</option>
+                    <option value="">No</option>
+                </param>
+                <when value="-ensf">
+                    <param name="size" type="float" value="5.0" size="5"
+                        label="Define the size (-ensf)" help="by default: 5">
+                        <sanitizer>
+                <valid initial="string.printable">
+                   <remove value="&apos;"/>
+                </valid>
+            </sanitizer>
+                        </param>
+                </when>
+                <when value=""/>
+            </conditional>     
+		 
+		 <param name="knn" type="integer" value="20" size="5" label="Number of nearest neighbors" help="-knn num">
+			 <sanitizer>
+                  <valid initial="string.printable">
+                     <remove value="&apos;"/>
+                  </valid>
+             </sanitizer>	
+		 </param>
+		 
+		 	
+		 <param name="sample_size" type="integer" value="10" size="5" label="The number of candidate clusters " help="-ss size">
+			<sanitizer>
+                <valid initial="string.printable">
+                   <remove value="&apos;"/>
+                </valid>
+            </sanitizer>
+		 </param>
+		 		
+		 <param name="nhf" type="integer" value="250" size="5" label="Number of hash functions " help="-nhf num">		
+			 <sanitizer>
+                <valid initial="string.printable">
+                   <remove value="&apos;"/>
+                </valid>
+            </sanitizer>
+		 </param>
         
     </inputs>
     <outputs>
