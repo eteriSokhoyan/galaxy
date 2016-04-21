@@ -7,8 +7,10 @@
     <command>
 <![CDATA[
 	
-	fasta2shrep_gspan.pl --fasta $input1
-		
+	##fasta2shrep_gspan.pl  -t "3=0,5=80" -M 5 -c 20 -win 40,150 -shift 30  -u --stack --seq-graph-t --fasta $input1
+	
+	fasta2shrep_gspan.pl  --fasta $input1 -t "3=0,5=80" -M 5 -c 20 -win 40,150 -shift 30 -u --stack --seq-graph-t --group 10000 
+	
 ]]>
 
 
@@ -22,7 +24,14 @@
     <outputs>
 		<!--> stex konkret file em output anum, bayc irakanum ine liqe bz2-nera sarqum. es
 		harce petqa qnnarkel u tesnel te vonc lucel <-->
-        <data name="output1" format="bz2" from_work_dir="GSPAN/2.gspan.bz2" label = "gspan zip"  />
+        <!--data name="output1" format="bz2" from_work_dir="GSPAN/1.gspan.bz2" label = "gspan zip"  /-->
+        
+         
+		<data format="bz2" name="zips">
+			<discover_datasets pattern="__designation_and_ext__" directory="GSPAN" visible="true" />
+        </data>
+    
+        
         
     </outputs>
     <tests>

@@ -6,7 +6,15 @@
     </stdio>
     <command>
 <![CDATA[
-		ln -s $input1 gspan &&
+
+		##ln -s $input1 gspan &&
+		
+		###for bz2 files
+		tmp_file=\$(mktemp) 
+		bzcat $input1 > \$tmp_file &&
+		
+		
+		ln -s \$tmp_file gspan &&
 		
 		NSPDK -R 3 -D 3 -gt DIRECTED -fg gspan -of &&
 
