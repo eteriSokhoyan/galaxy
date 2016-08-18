@@ -7,31 +7,14 @@
         unzip $input1 -d ./ &&
         cp /home/eteri/GalaxyProject/galaxy/tools/CMFinder/alifold.pl ./ &&
         cp /home/eteri/GalaxyProject/galaxy/tools/CMFinder/mloc2stockholm.pl ./ &&
-        ##tmp_cm_file=\$(mktemp) &&
-
 
         python /home/eteri/GalaxyProject/galaxy/tools/CMFinder/cmfinder.py ./
-
-
-
-
-
-
-
-
-
-	##	/home/sokhoyae/Desktop/GalaxyProject/galaxy/tools/CMFinder/cmfinder
-
-	##	$gap_threshold_opts.gap_threshold_opts_selector
-    ##        #if $gap_threshold_opts.gap_threshold_opts_selector == '--g':
-    ##            $gap_threshold_opts.gap
-    ##        #end if
-
-	##	-a $input1 $input2 \$tmp_cm_file > $output1
 ]]>
 </command>
     <inputs>
-        <param type="data" name="input1" label ="ziped Cluters" format="zip" help="CLUSTER.zip" />
+
+     <!--param name="input1" type="data_collection" label="Input Collect" help="Input collection..." /-->
+     <param name="input1" type="data"  format="zip" label="Input Collect" help="Input collection..." />
 
         <conditional name="gap_threshold_opts">
             <param name="gap_threshold_opts_selector" type="select" label="Use gap threshold" help="">
@@ -52,7 +35,10 @@
         </conditional>
     </inputs>
     <outputs>
-       <data name="Cluster.zip" format="zip" label = "CLUSTER.zip" from_work_dir = "CLUSTER.zip"/>
+       <data name="Clusters" format="zip" label="CLUSTER" from_work_dir = "CLUSTER/*"/>
+      <!--collection name="outputs" type_source="input1" format="zip" label="zipped Clusters">
+       <discover_datasets pattern="__name_and_ext__" directory="CLUSTER" />
+     </collection-->
     </outputs>
     <tests>
         <test>

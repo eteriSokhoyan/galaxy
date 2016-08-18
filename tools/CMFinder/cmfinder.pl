@@ -5,8 +5,12 @@
 
 use Getopt::Long qw(:config no_ignore_case); 
 
+########## TO DO ##############
+#~ change the path to gloibal
+
+
 #$path= ".";
-$path= "/home/eteri/GalaxyProject/galaxy/tools/CMFinder";
+#$path= "/home/sokhoyae/Desktop/GalaxyProject/galaxy/tools/CMFinder";
 #$path= $ENV{CMfinder};
 $blast_path=$ENV{BLAST};
 
@@ -86,7 +90,7 @@ OPTION
 
 
 
-system("$path/candf -c $CAND -o $SEQ.h$HAIRPIN.cand -M $MAXSPAN -m $MINSPAN -s $MIN_HAIRPIN -S $MAX_HAIRPIN $SEQ");
+system("./candf -c $CAND -o $SEQ.h$HAIRPIN.cand -m $MINSPAN -M $MAXSPAN -s $MIN_HAIRPIN -S $MAX_HAIRPIN $SEQ");
 
 if ($NO_BLAST == 0) {
     #build blast database
@@ -97,13 +101,13 @@ if ($NO_BLAST == 0) {
 }
 else{ 
 	
-    system("$path/cands -n $N -f $FRACTION $SEQ $SEQ.h$HAIRPIN.cand");
+    system("./cands -n $N -f $FRACTION $SEQ $SEQ.h$HAIRPIN.cand");
 }
 
 for($i=1; $i <= $N; $i++) {
     if (-s "$SEQ.h$HAIRPIN.cand.$i"){
-	system("$path/canda $SEQ.h$HAIRPIN.cand.$i  $SEQ $SEQ.align.h$HAIRPIN.$i");
-	system("$path/cmfinder -o $SEQ.motif.h$HAIRPIN.$i -a $SEQ.align.h$HAIRPIN.$i $SEQ $SEQ.cm.h$HAIRPIN.$i >> $SEQ.h$HAIRPIN.out.$i");
+	system("./canda $SEQ.h$HAIRPIN.cand.$i  $SEQ $SEQ.align.h$HAIRPIN.$i");
+	system("./cmfinder -o $SEQ.motif.h$HAIRPIN.$i -a $SEQ.align.h$HAIRPIN.$i $SEQ $SEQ.cm.h$HAIRPIN.$i >> $SEQ.h$HAIRPIN.out.$i");
     }
 }
 

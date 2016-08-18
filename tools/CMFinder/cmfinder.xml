@@ -5,7 +5,7 @@
     <command>
         <![CDATA[
 		tmp_cm_file=\$(mktemp);
-		cmfinder 
+		/home/eteri/GalaxyProject/galaxy/tools/CMFinder/cmfinder
 		
 		$gap_threshold_opts.gap_threshold_opts_selector
             #if $gap_threshold_opts.gap_threshold_opts_selector == '--g':
@@ -16,8 +16,8 @@
 ]]>
 </command>
     <inputs>
-        <param type="data" name="input1" label ="sequence file" format="stk" help="stokholm format" />
-        <param type="data" name="input2" label="the initial motif alignment (-a)" format="fasta" help="fasta format" />
+        <param type="data" name="input1" label ="sequence file" format="stockholm" help="stokholm format (model_tree.stk)" />
+        <param type="data" name="input2" label="the initial motif alignment (-a)" format="fasta" help="fasta format (cmfinder.fa)" />
         <conditional name="gap_threshold_opts">
             <param name="gap_threshold_opts_selector" type="select" label="Use gap threshold" help="">
                 <option value="--g" selected="true">Yes (--g)</option>
@@ -37,7 +37,7 @@
         </conditional>
     </inputs>
     <outputs>
-        <data name="output1" format="stk" label = "output"  />
+        <data name="output1" format="stockholm" label = "model.cmfinder.stk"  />
     </outputs>
     <tests>
         <test>
@@ -61,15 +61,5 @@ Options:
 	-h               Show this list
 ]]>
     </help>
-    <citations>
-        <citation type="bibtex">
-@misc{githubseqtk,
-  author = {LastTODO, FirstTODO},
-  year = {TODO},
-  title = {seqtk},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = {https://github.com/lh3/seqtk},
-}</citation>
-    </citations>
+    
 </tool>

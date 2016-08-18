@@ -11,7 +11,7 @@ $vrna_path = "2.1.2/bin";
 #~ my $data_fasta = $ARGV[1];
 #~ my $fast_cluster_sim = $ARGV[2];
 
-my ($fast_cluster, $data_fasta, $fast_cluster_sim, $map_data ) = @ARGV;
+my ($fast_cluster, $data_fasta, $fast_cluster_sim, $map_data) = @ARGV;
 
 
 my $CI = 1;
@@ -144,22 +144,22 @@ while ( keys %toDo_models ) {
 
 
 
-#my $directory = $CLUSTER_DIR;
+my $directory = $CLUSTER_DIR;
 
-#opendir (DIR, $directory) or die $!;
+opendir (DIR, $directory) or die $!;
 
-#while (my $file = readdir(DIR)) {
+while (my $file = readdir(DIR)) {
 
-      #print "$file\n";
-      #next if ($file =~ m/^\./);
-      #system("zip -r $CLUSTER_DIR/$file.zip $CLUSTER_DIR/$file");
-      #system("rm -r $CLUSTER_DIR/$file")
-   #}
-
-
+      print "$file\n";
+      next if ($file =~ m/^\./);
+      system("zip -r $CLUSTER_DIR/$file.zip $CLUSTER_DIR/$file");
+      system("rm -r $CLUSTER_DIR/$file")
+   }
 
 
-system("zip -r $CLUSTER_DIR.zip $CLUSTER_DIR");
+
+
+#system("zip -r $CLUSTER_DIR.zip $CLUSTER_DIR");
 #system("rm -r $CLUSTER_DIR"); ###
 
 

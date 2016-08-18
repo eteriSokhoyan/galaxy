@@ -1,4 +1,3 @@
-
 ##!/usr/bin/perl
 #use feature ':5.10';
 use File::Basename;
@@ -118,9 +117,7 @@ Options:
         -group		<INTEGER> e.g. 5
                         Combine/group that number of input seqs into 1 gspan file
                         output name is then '<INT>.group.gspan.bz2'
-        -sge            Use SGE cluster for each sequence separately
-        -sge-logdir     stdout directory for SGE call
-        -sge-errdir     sdterr directory for SGE call
+        
         -stdout         send graphs to stdout instead of writing to files
         -ignore-header  don't write fasta id part after first space to gspan
         -debug          additional debug output
@@ -135,36 +132,14 @@ Options:
         -tmp    "/var/tmp/fasta2shrep"
         -o		"CURRENT_DIR/GSPAN_Outputs/"
 
-        SGE mode
-        -sge-logdir "CURRENT_DIR/GSPAN_Outputs/SGE_log"
-        -sge-errdir "CURRENT_DIR/GSPAN_Outputs/SGE_log"
-        -task-id <NUM>
+        
 
 =head1 DESCRIPTION
 
 =cut
 
 ###############################################################################
-# end handler for temporary directory
-# adds an error handler that deletes the directory in case of error
-# SIGUSR{1/2} are sent by the sge prior to the uncatchable SIGKILL if the
-# option -notify was set
-###############################################################################
-$SIG{'INT'}  = 'end_handler';
-$SIG{'TERM'} = 'end_handler';
-$SIG{'ABRT'} = 'end_handler';
-$SIG{'USR1'} = 'end_handler';
-$SIG{'USR2'} = 'end_handler';
 
-sub end_handler {
-  print STDERR "signal ", $_[0], " caught, cleaning up temporary files\n";
-
-  # change into home directory. deletion of the temporary directory will
-  # fail if it is the current working directory
-  chdir();
-  File::Temp::cleanup();
-  die();
-}
 
 ###############################################################################
 # PARSE COMMAND LINE OPTIONS
@@ -203,12 +178,11 @@ my $options = GetOptions(
   "seq-graph-win"   => \$i_add_seq_graph_win,
   "seq-graph-t"     => \$i_add_seq_graph_t,
   "seq-graph-alph"  => \$i_change_seq_graph_alph,
-  "sge"             => \$i_sge,
+  
   "task-id=i"       => \$i_jobid,
   "ignore-header"   => \$i_ignore_seq_header,
   "stdout"          => \$i_stdout,
-  "sge-logdir=s"    => \$i_sge_logDir,
-  "sge-errdir=s"    => \$i_sge_errDir,
+  
   "group=i"         => \$i_groupsize,
   "annotate=s"      => \$i_annotate,
   "abstr"           => \$i_abstr,
@@ -307,7 +281,10 @@ if ( not $i_stdout ) {
 ###############################################################################
 # GLOBAL VARIABLES
 ###############################################################################
-my $rnashapes_loc = "./RNAshapes";    ##### stex es er grac es poxel em:  $CONFIG{PATH_RNASHAPES} . "/RNAshapes";
+
+##my $rnashapes_loc = "./RNAshapes";    ##### stex es er grac es poxel em:  $CONFIG{PATH_RNASHAPES} . "/RNAshapes";
+my $rnashapes_loc = "/usr/local/rnashapes/2.1.6/bin/RNAshapes";   
+
 if ( !$rnashapes_loc || !-e $rnashapes_loc ) {
   my $loc = `which RNAshapes`;
   chomp($loc);
@@ -339,68 +316,7 @@ my $ABSTRUCT = "AS";
 # read fasta file into hash
 my ( $headers_aref, $sequences_aref, $metainfo_aref ) = read_fasta_with_nonunique_headers_meta($i_fas);
 
-# call script again on the sge cluster in a batch job
-if ($i_sge) {
-  my $SCRIPTNAME    = $0;
-  my $CLUSTERSUBMIT = $FindBin::Bin."/fasta2shrep_gspan.sge";
 
-  die "Cannot find SGE submit script $CLUSTERSUBMIT! Exit...\n\n" if ( !-e $CLUSTERSUBMIT );
-
-  my $SGE_jobs = @{$sequences_aref};
-  $SGE_jobs = ceil( @{$sequences_aref} / $i_groupsize ) if ($i_groupsize);
-
-  my $params = "-fasta $i_fas ";
-  $params .= "-wins $i_wins "                    if ($i_wins);
-  $params .= "-shift $i_shift "                  if ($i_shift);
-  $params .= "-e $i_e "                          if ($i_e);
-  $params .= "-c $i_c "                          if ($i_c);
-  $params .= "-t $i_t "                          if ($i_t);
-  $params .= "-u "                               if ($i_u);
-  $params .= "-r "                               if ($i_r);
-  $params .= "-M $i_M "                          if ($i_M);
-  $params .= "-o $i_o "                          if ($i_o);
-  $params .= "-i $i_i "                          if ($i_i);
-  $params .= "--sample-len $i_sample_min_length" if ($i_sample_min_length);
-  $params .= "-q "                               if ($i_q);
-  $params .= "-Tp $i_T "                         if ($i_T);
-  $params .= "--seq-grap-win "                   if ($i_add_seq_graph_win);
-  $params .= "--seq-graph-t "                    if ($i_add_seq_graph_t);
-  $params .= "--seq-graph-alph "                 if ($i_change_seq_graph_alph);
-  $params .= "-ignore-header "                   if ($i_ignore_seq_header);
-  $params .= "-cue "                             if ($i_crop_unpaired_ends);
-  $params .= "-stack "                           if ($i_stacks);
-  $params .= "--group $i_groupsize "             if ($i_groupsize);
-  $params .= "-annotate $i_annotate"             if ($i_annotate);
-  $params .= "-abstr"                            if ($i_abstr);
-  $params .= "-nostr "                           if ($i_no_structure);
-  $params .= "--debug "                          if ($i_debug);
-  $params .= "-vp "                              if ($i_vp);
-  $params .= "--match-shape $i_matchShape "      if ($i_matchShape);
-
-  print "used script:" . $SCRIPTNAME . "\n";
-  print "used submit script:" . $CLUSTERSUBMIT . "\n";
-
-  $i_sge_logDir = "$i_o/SGE_log" if ( !$i_sge_logDir );
-  mkdir($i_sge_logDir);
-
-  $i_sge_errDir = $i_sge_logDir if ( !$i_sge_errDir );
-  mkdir($i_sge_errDir);
-
-  my $ssh = 1;    ## can be used for debug shell script call
-  if ($ssh) {
-    system( "ssh $CURRUSER\@biui.informatik.uni-freiburg.de "
-        . "'export SGE_ROOT=/opt/sge-6.0/; cd $CURRDIR; "
-        . "/opt/sge-6.0/bin/lx24-amd64/qsub -t 1-$SGE_jobs -o $i_sge_errDir/ -e $i_sge_errDir/ "
-        . "$CLUSTERSUBMIT $CURRDIR $SCRIPTNAME \"$params\" ' " );
-  } else {
-    system("$CLUSTERSUBMIT $CURRDIR $SCRIPTNAME '$params' ");
-  }
-  exit;
-}
-
-## compute shreps and gspan, either local or after SGE submission
-
-# TODO read and process annotations
 
 my @used_seq_headers;
 my @used_seqs;
