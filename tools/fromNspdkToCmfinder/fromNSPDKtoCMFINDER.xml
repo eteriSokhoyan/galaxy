@@ -21,7 +21,7 @@
 
     <outputs>
 
-      <collection name="outputs" type="list" format="zip" label="zipped Clusters">
+      <collection name="outputs" type="list" format="gfClustzip" label="zipped Clusters">
       <discover_datasets pattern="__name_and_ext__" directory="CLUSTER" />
     </collection>
 

@@ -64,7 +64,7 @@ for i in range(0, len(files), 2):
 
      directory, sep, clDir = updir.rpartition('/')
      print "dir = ", clDir
-     sh("zip -r CLUSTER/" + clDir + ".zip " + "CLUSTER/" + clDir)
+     sh("zip -r CLUSTER/" + clDir + ".gfClustzip " + "CLUSTER/" + clDir)
      #shutil.make_archive(input_dir + "CLUSTER/" + clDir, 'zip', input_dir + "CLUSTER/" + clDir)
      sh("rm -r " + input_dir + "CLUSTER/" + clDir);
      #clst, sep, tail = name.partition('/')

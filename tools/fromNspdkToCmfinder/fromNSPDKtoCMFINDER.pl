@@ -152,7 +152,7 @@ while (my $file = readdir(DIR)) {
 
       print "$file\n";
       next if ($file =~ m/^\./);
-      system("zip -r $CLUSTER_DIR/$file.zip $CLUSTER_DIR/$file");
+      system("zip -r $CLUSTER_DIR/$file.gfClustzip $CLUSTER_DIR/$file");
       system("rm -r $CLUSTER_DIR/$file")
    }
 
