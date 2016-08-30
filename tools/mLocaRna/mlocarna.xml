@@ -6,7 +6,7 @@
         <![CDATA[
 
         cp -r /home/eteri/GalaxyProject/galaxy/tools/mLocaRna/locarna ./ &&
-
+        cp  /home/eteri/GalaxyProject/galaxy/tools/mLocaRna/mloc2stockholm.pl ./ &&
         cp  /home/eteri/GalaxyProject/galaxy/tools/mLocaRna/mlocarna.pl ./ &&
 
 		    perl mlocarna.pl $center_fa_file $tree_file
