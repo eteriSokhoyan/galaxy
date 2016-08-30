@@ -1,0 +1,197 @@
+# STOCKHOLM 1.0
+#=GF AU    CMfinder 0.2
+
+#=GS 4.1  WT    1.00
+#=GS 5.1  WT    1.00
+#=GS 7.1  WT    1.00
+#=GS 9.1  WT    1.00
+#=GS 10.1 WT    1.00
+#=GS 11.1 WT    1.00
+#=GS 12.1 WT    1.00
+#=GS 13.1 WT    1.00
+#=GS 14.1 WT    1.00
+#=GS 15.1 WT    1.00
+#=GS 16.1 WT    1.00
+#=GS 17.1 WT    1.00
+#=GS 18.1 WT    1.00
+#=GS 19.1 WT    1.00
+#=GS 20.1 WT    1.00
+#=GS 21.1 WT    1.00
+#=GS 22.1 WT    1.00
+#=GS 23.1 WT    1.00
+#=GS 24.1 WT    1.00
+#=GS 26.1 WT    1.00
+#=GS 28.1 WT    1.00
+#=GS 30.1 WT    1.00
+#=GS 31.1 WT    1.00
+#=GS 32.1 WT    1.00
+#=GS 33.1 WT    1.00
+#=GS 35.1 WT    1.00
+#=GS 36.1 WT    1.00
+#=GS 37.1 WT    1.00
+#=GS 45.1 WT    1.00
+#=GS 46.1 WT    1.00
+#=GS 50.1 WT    1.00
+
+#=GS  4.1 DE      1.. 72	76.802521
+#=GS  5.1 DE      1.. 71	81.817589
+#=GS  7.1 DE      1.. 82	74.152077
+#=GS  9.1 DE      1.. 72	91.235611
+#=GS 10.1 DE      1.. 72	75.266449
+#=GS 11.1 DE      1.. 81	98.595459
+#=GS 12.1 DE      1.. 81	93.715050
+#=GS 13.1 DE      1.. 81	97.993019
+#=GS 14.1 DE      1.. 72	42.405006
+#=GS 15.1 DE      1.. 72	81.175163
+#=GS 16.1 DE      1.. 71	72.548370
+#=GS 17.1 DE      1.. 70	84.039703
+#=GS 18.1 DE      1.. 71	77.203430
+#=GS 19.1 DE      1.. 81	60.722069
+#=GS 20.1 DE      1.. 71	77.246239
+#=GS 21.1 DE      1.. 73	78.590645
+#=GS 22.1 DE      1.. 71	30.148529
+#=GS 23.1 DE      1.. 73	78.983772
+#=GS 24.1 DE      1.. 72	78.945938
+#=GS 26.1 DE      1.. 71	83.000153
+#=GS 28.1 DE      1.. 70	83.933304
+#=GS 30.1 DE      1.. 71	75.529572
+#=GS 31.1 DE      1.. 72	92.049377
+#=GS 32.1 DE      1.. 72	88.947762
+#=GS 33.1 DE      1.. 71	72.998512
+#=GS 35.1 DE      1.. 71	73.313309
+#=GS 36.1 DE      1.. 72	87.152771
+#=GS 37.1 DE      1.. 81	82.648537
+#=GS 45.1 DE      1.. 71	67.833954
+#=GS 46.1 DE      1.. 71	78.375526
+#=GS 50.1 DE      1.. 72	80.842148
+
+4.1              GGCUCCAUAGCUCAG-G-GGU-UAGAGCACUGGUCUUGUAAACCAG----
+#=GR 4.1  SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+5.1              GGUCCCAUGGUGUAA-U-GGU-UAGCACUCUGGACUUUGAAUCCAG----
+#=GR 5.1  SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+7.1              GUCAGGAUGGCCGAG-C-GGUCUAAGGCGCUGCGUUCAGGUCGCAG----
+#=GR 7.1  SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+9.1              GCUUCUGUAGUGUAG-U-GGU-UAUCACGUUCGCCUCACACGCGAA----
+#=GR 9.1  SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+10.1             GCCCGGCUAGCUCAG-UCGG--UAGAGCAUGAGACUCUUAAUCUCA----
+#=GR 10.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+11.1             GCAGCGAUGGCCGAG-U-GGU-UAAGGCGUUGGACUUGAAAUCCAA----
+#=GR 11.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+12.1             GUAGUCGUGGCCGAG-U-GGU-UAAGGCGAUGGACUUGAAAUCCAU----
+#=GR 12.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+13.1             GUAGUCGUGGCCGAG-U-GGU-UAAGGCGAUGGACUAGAAAUCCAU----
+#=GR 13.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+14.1             UAGAUUGAAGC-CAG-UUGAU-UAGGGUGCUUAGCUGUUAACUAAG----
+#=GR 14.1 SS     <<<<<<<..<<...............>>.<<<<<.......>>>>>....
+15.1             GCCGAAAUAGCUCAG-UUGG--GAGAGCGUUAGACUGAAGAUCUAA----
+#=GR 15.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+16.1             GGGGAUGUAGCUCAG-U-GG--UAGAGCGCAUGCUUCGCAUGUAUG----
+#=GR 16.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+17.1             GCAUUGGUGGUUCAG-U-GG--UAGAAUUCUCGCCUCCCACGCGGG----
+#=GR 17.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+18.1             GCGUUGGUGGUAUAG-U-GGU-GAGCAUAGCUGCCUUCCAAGCAGU----
+#=GR 18.1 SS     <<<<<<<..<<-.............->>.<<<<<.......>>>>>....
+19.1             GGUGGGGUUCCCGAG-C-GGCCAAAGGGAGCAGACUCUAAAUCUGC----
+#=GR 19.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+20.1             GGGGGUAUAGCUCAG-G-GG--UAGAGCAUUUGACUGCAGAUCAAG----
+#=GR 20.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+21.1             GUCUCUGUGGCGCAA-UCGGU-UAGCGCGUUCGGCUGUUAACCGAA----
+#=GR 21.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+22.1             UAGGAUGGGGUGUGA-UAGG--UGGCACGGAGAAUUUUGGAUUCUC----
+#=GR 22.1 SS     <<<<<<-..<<<.............>>>.<<<<<.......>>>>>....
+23.1             GGCCGGUUAGCUCAG-UUGGU-UAGAGCGUGGUGCUAAUAACGCCA----
+#=GR 23.1 SS     <<<<-<<..<<<.............>>>.<<<<<.......>>>>>....
+24.1             CCUUCGAUAGCUCAGCU-GG--UAGAGCGGAGGACUGUAGAUCCUU----
+#=GR 24.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+26.1             GGUUCCAUGGUGUAA-U-GGU-UAGCACUCUGGACUCUGAAUCCAG----
+#=GR 26.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+28.1             GCAUUGGUGGUUCAG-U-GG--UAGAAUUCUCGCCUGCCACGCGGG----
+#=GR 28.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+30.1             GGCUCGUUGGUCUAG-G-GG--UAUGAUUCUCGCUUAGGGUGCGAG----
+#=GR 30.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+31.1             GUUUCCGUAGUGUAG-U-GGU-UAUCACGUUCGCCUCACACGCGAA----
+#=GR 31.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+32.1             GUUUCCGUAGUGUAG-C-GGU-UAUCACAUUCGCCUCACACGCGAA----
+#=GR 32.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+33.1             UCCUCGUUAGUAUAG-U-GGU-GAGUAUCCCCGCCUGUCACGCGGG----
+#=GR 33.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+35.1             UCCCUGGUGGUCUAG-U-GGC-UAGGAUUCGGCGCUUUCACCGCCG----
+#=GR 35.1 SS     <-<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+36.1             GUUUCCGUAGUGUAG-U-GGU-UAUCACGUUCGCCUAACACGCGAA----
+#=GR 36.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+37.1             GGUAGCGUGGCCGAG-C-GGUCUAAGGCGCUGGAUUUAGGCUCCAGUCUC
+#=GR 37.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+45.1             AGCAGAGUGGCGCAG-C-GG--AAGCGUGCUGGGCCCAUAACCCAG----
+#=GR 45.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+46.1             UCCCUGGUGGUCUAG-U-GGU-UAGGAUUCGGCGCUCUCACCGCCG----
+#=GR 46.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+50.1             GCCCGGAUAGCUCAG-UCGG--UAGAGCAUCAGACUUUUAAUCUGA----
+#=GR 50.1 SS     <<<<<<<..<<<.............>>>.<<<<<.......>>>>>....
+#=GC SS_cons     (((((((,,<<<_____________>>>,<<<<<_______>>>>>,,,,
+#=GC RF          GccucggUaGuucAGCUuGGUCUAGaaCgcUgGaCUcacAAuCcAgUCUC
+
+4.1              -----GGG--------------UCGCGAGUUCAAUUCUCGCUGGGGCU
+#=GR 4.1  SS     ........................<<<<<.......>>>>>>>>>>>>
+5.1              -----CG---------------AUCCGAGUUCAAAUCUCGGUGGGACC
+#=GR 5.1  SS     ........................<<<<<.......>>>>>>>>>>>>
+7.1              -----UC-----UCCCCUGGAGGCGUGGGUUCGAAUCCCACUUCUGAC
+#=GR 7.1  SS     ........................<<<<<.......>>>>>>>>>>>>
+9.1              -----AGG--------------UCCCCGGUUCGAAACCGGGCAGAAGC
+#=GR 9.1  SS     ........................<<<<<.......>>>>>>>>>>>>
+10.1             -----GGG--------------UCGUGGGUUCGAGCCCCACGUUGGGC
+#=GR 10.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+11.1             -----UGGGGUCUCCCC-----GCGCAGGUUCGAACCCUGCUCGCUGC
+#=GR 11.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+12.1             -----UGGGGUUUCCCC-----GCGCAGGUUCGAAUCCUGUCGGCUAC
+#=GR 12.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+13.1             -----UGGGGUUUCCCC-----ACGCAGGUUCGAAUCCUGCCGACUAC
+#=GR 13.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+14.1             -----UGU--------------UUGUGGGUUUAAGUCCCAUUGGUCUA
+#=GR 14.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+15.1             -----AGG--------------UCCCUGGUUCGAUCCCGGGUUUCGGC
+#=GR 15.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+16.1             -----AGG--------------CCCCGGGUUCGAUCCCCGGCAUCUCC
+#=GR 16.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+17.1             -----AG---------------ACCCGGGUUCAAUUCCCGGCCAAUGC
+#=GR 17.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+18.1             -----UG---------------ACCCGGGUUCGAUUCCCGGCCAACGC
+#=GR 18.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+19.1             -----CGUCAUCGACU------UCGAAGGUUCGAAUCCUUCCCCCACC
+#=GR 19.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+20.1             -----AGG--------------UCCCUGGUUCAAAUCCAGGUGCCCCC
+#=GR 20.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+21.1             -----AGG--------------UUGGUGGUUCGAGCCCACCCAGGGAC
+#=GR 21.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+22.1             -----AG---------------GGAUGGGUUCGAUUCUCAUAGUCCUA
+#=GR 22.1 SS     ........................<<<<<.......>>>>>->>>>>>
+23.1             -----AGG--------------UCGCGGGUUCGAUCCCCGUACGGGCC
+#=GR 23.1 SS     ........................<<<<<.......>>>>>>>->>>>
+24.1             -----AGG--------------UCGCUGGUUCGAUUCCGGCUCGAAGG
+#=GR 24.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+26.1             -----CG---------------AUCCGAGUUCAAAUCUCGGUGGAACC
+#=GR 26.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+28.1             -----AG---------------GCCCGGGUUCGAUUCCCGGCCAAUGC
+#=GR 28.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+30.1             -----AGG--------------UCCCGGGUUCAAAUCCCGGACGAGCC
+#=GR 30.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+31.1             -----AGG--------------UCCCCGGUUCGAAACCGGGCGGAAAC
+#=GR 31.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+32.1             -----AGG--------------UCCCCGGUUCGAUCCCGGGCGGAAAC
+#=GR 32.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+33.1             -----AG---------------ACCGGGGUUCGAUUCCCCGACGGGGA
+#=GR 33.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+35.1             -----CG---------------CCCCGGGUUCGAUUCCCGGCCAGGAA
+#=GR 35.1 SS     ........................<<<<<.......>>>>>>>>>>->
+36.1             -----AGG--------------UCCCUGGAUCAAAACCAGGCGGAAAC
+#=GR 36.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+37.1             UUCGGAG---------------GCGUGGGUUCGAAUCCCACCGCUGCC
+#=GR 37.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+45.1             -----AGG--------------UCGAUGGAUCGAAACCAUCCUCUGCU
+#=GR 45.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+46.1             -----CG---------------GCCCGGGUUCGAUUCCCGGUCAGGGA
+#=GR 46.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+50.1             -----GGG--------------UCCAGGGUUCAAGUCCCUGUUCGGGC
+#=GR 50.1 SS     ........................<<<<<.......>>>>>>>>>>>>
+#=GC SS_cons     ,,,,,,,,,,,,,,,,,,,,,,,,<<<<<_______>>>>>)))))))
+#=GC RF          UUCGGAGGGGUuUCCCCUGGAGuCcCgGGUUCGAAUCCcGgccgaggC
+//

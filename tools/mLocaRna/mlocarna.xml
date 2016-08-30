@@ -1,0 +1,41 @@
+<tool id="mlocarna" name="mlocarna" version="0.1.0" >
+    <stdio>
+        <exit_code range="1:" />
+    </stdio>
+    <command>
+        <![CDATA[
+
+        cp -r /home/eteri/GalaxyProject/galaxy/tools/mLocaRna/locarna ./ &&
+
+        cp  /home/eteri/GalaxyProject/galaxy/tools/mLocaRna/mlocarna.pl ./ &&
+
+		    perl mlocarna.pl $center_fa_file $tree_file
+        ]]>
+</command>
+    <inputs>
+
+        <param type="data" name="center_fa_file" label="centers" format="fa, fasta" help="fasta format" />
+        <param type="data" name="tree_file" label="trees" format="text" help="text format" />
+
+    </inputs>
+
+    <outputs>
+
+	        <data name="model_tree_stk" format="stockholm" label="model.tree.stk" from_work_dir="mloc/results/result.aln" />
+
+    </outputs>
+    <tests>
+        <test>
+            <param name="tree_file" value="model.tree.stk"/>
+            <param name="center_fa_file" value="center.fa"/>
+            <output name="model_cmfinder_stk" file="model.cmfinder.stk"/>
+        </test>
+    </tests>
+    <help>
+        <![CDATA[
+
+
+]]>
+    </help>
+
+</tool>
