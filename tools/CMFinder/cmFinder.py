@@ -14,6 +14,12 @@ def sh(script):
 #input_dir = sys.argv[1]
 model_tree_stk = sys.argv[1]
 cmfinder_fa = sys.argv[2]
+gapCmd = ""
+gapVal = ""
+if len(sys.argv) > 3:
+    gapCmd = sys.argv[3]
+    gapVal = sys.argv[4]
+
 
 #sh("mkdir  CLUSTER")
 #sh("cd CLUSTER/")
@@ -33,7 +39,7 @@ sh(cmd_stk)
 model_tree_stk = "model.cmfinder.stk.sth"
 
 
-os.popen("/home/eteri/GalaxyProject/galaxy/tools/CMFinder/cmfinder --g 1.0 -a " + model_tree_stk +  " " + cmfinder_fa + " " +  " output > model.cmfinder.stk")# + directory +"/model.cmfinder.stk && rm " + directory + "/output")
+os.popen("/home/eteri/GalaxyProject/galaxy/tools/CMFinder/cmfinder " +  gapCmd + " " + gapVal + " -a " + model_tree_stk +  " " + cmfinder_fa + " " +  " output > model.cmfinder.stk")# + directory +"/model.cmfinder.stk && rm " + directory + "/output")
 if os.path.isfile('output') :
     ##copyfile("output", "model.cmfinder.stk")
     sh("rm output")

@@ -1,5 +1,5 @@
 ##!/usr/bin/perl
-#use GraphClust;
+
 use strict;
 use Getopt::Long;
 use Pod::Usage;
@@ -15,7 +15,7 @@ my $in_fasta =  $ARGV[0];
 
 
 my @fa_in = read_fasta_file($in_fasta,1);
-#my @fa_in = GraphClust::read_fasta_file($in_fasta,1);
+
 my $in_prefix      = "data";
 my $SEQPREFIX      = "SEQ";
 
@@ -25,12 +25,6 @@ my $in_winShift    =  $ARGV[3]; ### winshift value from config
 my $fa_name = $in_prefix;
 my $min_seq_length =  $ARGV[4];
 
-
-#my $max_N_stretch  = 15;
-#my $max_length     = 40; ## instead on 0 should be winsize
-#my $in_winShift    = 30; ### winshift value from config
-#my $fa_name = $in_prefix;
-#my $min_seq_length = 5;
 
 my @split_wins = ($max_length); ## done
 my $splitWin = $split_wins[0]; ## done
@@ -45,6 +39,9 @@ system("mkdir -p $tgtdir");
 writeFrags( \@fa_in, $frags_shift, $frags_keep,  "$tgtdir/$fa_name" ); ##skip grey_href
 
 writeFiles( \@fa_in, $frags_splitN, $genome_locs); ## skip grey_href
+
+system("zip -r FASTA.zip FASTA");
+
 
 sub writeFrags {
   my $fa        = $_[0];  ## fastan file
@@ -291,7 +288,7 @@ sub writeFiles {
  # my $gl_href  = $_[3];
 
   open( FA, ">$tgtdir/orig.fasta" );
-  open( SC, ">$tgtdir/$in_prefix.fasta.scan" );
+  open( SC, ">$tgtdir/data.fasta.scan" );
   open( LO, ">$tgtdir/data.locations" );
   open( FR, ">$tgtdir/fragments.splitMasked.list" );
 

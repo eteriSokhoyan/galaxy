@@ -11,17 +11,12 @@
         cp -r /home/eteri/GalaxyProject/galaxy/tools/NSPDK/Array ./ &&
         cp -r /home/eteri/GalaxyProject/galaxy/tools/NSPDK/NSPDK ./ &&
 
-
-        perl NSPDK.pl $data_fasta $gspan_file $max_rad $max_dist_relations $noCache $ensf $oc $usn $knn $nhf
-
-
-
-
+        perl NSPDK.pl $data_fasta $gspan_file  $max_rad $max_dist_relations $noCache $ensf $oc $usn $knn $nhf
 
 ]]>
 	</command>
     <inputs>
-        <param type="data" name="gspan_file" format="txt" />
+        <param type="data" name="gspan_file" format="zip"  />
         <param type="data" name="data_fasta" format="fasta" />
 
          <param name="max_rad" type="integer" value="3" size="5" label="maximum radius " help="-R">
@@ -81,10 +76,34 @@
 
     </inputs>
     <outputs>
-        <data name="data_svector" format="txt" from_work_dir="SVECTOR/data.svector.1" label = "data_svector"  />
-        <data name="fast_cluster" format="txt" from_work_dir="SVECTOR/data.svector.1.fast_cluster" label = "fast_cluster"  />
-        <data name="fast_cluster_sim" format="txt" from_work_dir="SVECTOR/data.svector.1.fast_cluster_sim" label = "fast_cluster_sim"  />
+        <!--data name="data_svector" format="txt" from_work_dir="SVECTOR/data.svector.1" label="data_svector"  /-->
+        <data name="fast_cluster" format="txt" from_work_dir="SVECTOR/data.svector.1.fast_cluster" label="fast_cluster"  />
+        <data name="fast_cluster_sim" format="txt" from_work_dir="SVECTOR/data.svector.1.fast_cluster_sim" label="fast_cluster_sim"  />
     </outputs>
+
+    <tests>
+        <test>
+            <param name="data_fasta" value="data.fasta"/>
+            <!--param name="gspan_file" value="1.group.gspan.bz2"/-->
+            <param name="gspan_file" value="1.group.gspan.bz2" ftype="zip" />
+
+            <param name="max_rad" value="3"/>
+            <param name="max_dist_relations" value="3"/>
+            <param name="noCache" value="-no-cache"/>
+            <param name="ensf" value="5"/>
+            <param name="oc" value="-oc"/>
+            <param name="usn" value="-usn"/>
+            <param name="knn" value="20"/>
+            <param name="nhf" value="500"/>
+
+            <output name="fast_cluster" file="SVECTOR/data.svector.1.fast_cluster" />
+            <output name="fast_cluster_sim" file="SVECTOR/data.svector.1.fast_cluster_sim" />
+            <!--output name="data_svector" file="SVECTOR/data.svector.1" /-->
+
+        </test>
+    </tests>
+
+
 
     <help>
 <![CDATA[

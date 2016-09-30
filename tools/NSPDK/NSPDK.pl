@@ -13,17 +13,20 @@ my $nspdk_mi = 0;
 
 my ($data_fasta, $gspan, $rad, $dist, $noCache, $ensf,  $oc, $usn, $nspdk_knn_center, $nhf) = @ARGV;
 
+#print $nspdk_knn_center;
 my $group_gspan = "group.gspan";
 #my $group_gspan = $gspan;
-
+#print "gspan = $gspan \n";
+#print system("file $gspan") ;
+#print "\n";
+#print system("file $data_fasta") ;
 
 system("bzcat $gspan > $group_gspan");
 
 
-
-my @fa  = read_fasta_file($data_fasta); ### for now hard code, later give as an argument
+my @fa  = read_fasta_file($data_fasta);
 my $num_seqs = @{ $fa[1] };
-print "Number of sequences in FASTA/data.fasta: " . $num_seqs . "\n";
+print "\nNumber of sequences in FASTA/data.fasta: " . $num_seqs . "\n";
 
 die "Fasta file $FASTA_DIR/data.fasta contains only $num_seqs sequences! Exit...\n\n" if ( $num_seqs <= 2 );
 
@@ -152,7 +155,7 @@ $OPTS_nspdk_centers = "-ensf $ensf $oc $usn";
     #~ my $sge_status =
       #~ job_call( $job_name, "$BIN_DIR/fastCluster.NSPDK.sge", $CMD_fastClusterNSPDK, 1, $SGE_ERR_DIR, $in_USE_SGE, "$SVECTOR_DIR/sge_log_stage5.$CI", "$EVAL_DIR/times/time.stage.5.$CI", $sge_wait, $qsub_opts, 1, $job_uuid );
 
-    system("NSPDK $noCache -rs $CI -fsb $SVECTOR_DIR/data.svector.$CI -bl $SVECTOR_DIR/data.svector.blacklist.$CI $OPTS_nspdk_centers -knn 20 -ss " . 100 . " -nhf $nhf -mi $nspdk_mi -fcs 1");
+    system("NSPDK $noCache -rs $CI -fsb $SVECTOR_DIR/data.svector.$CI -bl $SVECTOR_DIR/data.svector.blacklist.$CI $OPTS_nspdk_centers -knn $nspdk_knn_center -ss " . 100 . " -nhf $nhf -mi $nspdk_mi -fcs 1");
 
 
       ## prefilter centers for interesting ones,

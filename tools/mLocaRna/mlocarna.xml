@@ -1,4 +1,5 @@
 <tool id="mlocarna" name="mlocarna" version="0.1.0" >
+
     <stdio>
         <exit_code range="1:" />
     </stdio>
@@ -26,9 +27,9 @@
     </outputs>
     <tests>
         <test>
-            <param name="tree_file" value="model.tree.stk"/>
+            <param name="tree_file" value="tree"/>
             <param name="center_fa_file" value="center.fa"/>
-            <output name="model_cmfinder_stk" file="model.cmfinder.stk"/>
+            <output name="model_tree_stk" file="model.tree.stk"/>
         </test>
     </tests>
     <help>
@@ -37,5 +38,7 @@
 
 ]]>
     </help>
+    <citations>
 
+      </citations>
 </tool>

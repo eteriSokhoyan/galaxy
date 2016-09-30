@@ -3,21 +3,20 @@ import shutil
 from shutil import copyfile
 from os import system
 import re
-#from sklearn.metrics.cluster import completeness_score
-#from sklearn.metrics.cluster import homogeneity_score
+import sklearn
 from sklearn import metrics
 
 def sh(script):
     system("bash -c '%s'" % script)
 
 dataNames = sys.argv[1]
-
+#path = sys.argv[2]
 
 
 listOfClusters = []
 listOfClasses = []
 
-cluster_seqs_stats_path = "RESULTS/*/cluster.seqs.stats"
+cluster_seqs_stats_path = "RESULTS/*.cluster.all"
 cluster_seqs_stats_files = glob.glob(cluster_seqs_stats_path)
 
 blackList =[]
@@ -26,35 +25,35 @@ for singleFile in sorted(cluster_seqs_stats_files):
     numberOfClusters += 1
     with open(singleFile, "r") as f:
         for line in f.readlines():
-            uniqueId = line.split()[4]
-            #print uniqueId
+            uniqueId = line.split()[8]
+            print "unique id = ", uniqueId
             clustNum = line.split()[1]
             rnaClass, sep, tail = uniqueId.partition("_")
             #classToClusterDict[rnaClass] = clustNum
             listOfClasses.append(rnaClass)
             listOfClusters.append(clustNum)
-            #print rnaClass
-            #print clustNum
+            print "rnaClass = ", rnaClass
+            print "clustNum = ", clustNum
 
 
             with open(dataNames, "r") as names:
                 for nameLine in names.readlines():
                     fullUniqeId = nameLine.split()[3]
-                    #print fullUniqeId
-                    #rnaClass, sep, tail = fullUniqeId.partition("_")
+                    print fullUniqeId
+                    rnaClass, sep, tail = fullUniqeId.partition("_")
                     if fullUniqeId == uniqueId:
                         blackList.append(uniqueId)
 
 print "numberOfClusters = " ,numberOfClusters
-numberOfClusters += 1 ### 1 cluster for all anassigned seqs
+numberOfClusters += 1 ### 1 cluster for all unassigned seqs
 with open(dataNames, "r") as names:
     for nameLine in names.readlines():
         fullUniqeId = nameLine.split()[3]
         rnaClass, sep, tail = fullUniqeId.partition("_")
-        #print fullUniqeId
-        #rnaClass, sep, tail = fullUniqeId.partition("_")
+        print "fullUniqeId = ", fullUniqeId
+        rnaClass, sep, tail = fullUniqeId.partition("_")
         if fullUniqeId not in blackList:
-            #numberOfClusters += 1 ### separate cluster for all anassigned seqs
+            numberOfClusters += 1 ### separate cluster for all unassigned seqs
             listOfClasses.append(rnaClass)
             listOfClusters.append(numberOfClusters)
 

@@ -7,7 +7,7 @@ $vrna_path = "2.1.2/bin";
 #~ ask Bjorn how to do that with wrappers
 
 
-my ($fast_cluster, $data_fasta, $fast_cluster_sim, $map_data) = @ARGV;
+my ($fast_cluster, $data_fasta, $fast_cluster_sim, $map_data,$nspdk_knn_center ) = @ARGV;
 
 
 my $CI = 1;
@@ -18,7 +18,7 @@ if (not defined $fast_cluster ||  not defined $data_fasta || not defined $fats_c
 
 
 
-my $nspdk_knn_center = 20;
+#my $nspdk_knn_center = 20;
 #my $ids_aref =  readSubset($fast_cluster, 2, $nspdk_knn_center);
 #print $ids_aref;
 #print "\n";

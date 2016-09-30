@@ -1,4 +1,5 @@
 <tool id="cmFinder" name="CMFinder_v0" version="0.1.0" force_history_refresh="True">
+
     <stdio>
         <exit_code range="1:" />
     </stdio>
@@ -9,6 +10,11 @@
         cp /home/eteri/GalaxyProject/galaxy/tools/CMFinder/mloc2stockholm.pl ./ &&
 
         python /home/eteri/GalaxyProject/galaxy/tools/CMFinder/cmFinder.py $model_tree_stk $cmfinder_fa
+        $gap_threshold_opts.gap_threshold_opts_selector
+        #if str($gap_threshold_opts.gap_threshold_opts_selector) == '--g':
+          $gap_threshold_opts.gap
+        #end if
+
 ]]>
 </command>
     <inputs>
@@ -43,9 +49,11 @@
     </outputs>
     <tests>
         <test>
-            <param name="input1" value="model.tree.stk"/>
-            <param name="input2" value="cmfinder.fa"/>
-            <output name="output1" file="out.stk"/>
+            <param name="model_tree_stk" value="model.tree.stk"/>
+            <param name="cmfinder_fa" value="cmfinder.fa"/>
+            <param name="gap_threshold_opts.gap_threshold_opts_selector" value="--g"/>
+            <param name="gap_threshold_opts.gap" value="1.0"/>
+            <output name="model_cmfinder_stk" file="model.cmfinder.stk"/>
         </test>
     </tests>
     <help>
@@ -62,5 +70,7 @@ Options:
 	-h               Show this list
 ]]>
 </help>
+<citations>
 
+  </citations>
 </tool>
