@@ -1,9 +1,10 @@
 use List::Util qw/ min max /;
 
 
-my ($center_fa_file, $tree_file) = @ARGV;
+my ($center_fa_file, $tree_file, $p, $max_diff_am, $tau, $max_diff) = @ARGV;
 
-$mloc_opts = "-p 0.001 --max-diff-am 50 --tau 50  --max-diff 100 --alifold-consensus-dp";
+
+$mloc_opts = "-p $p --max-diff-am $max_diff_am --tau $tau  --max-diff $max_diff --alifold-consensus-dp";
 
 #$num = $center_fa_file;
 #$num =~ s/\D+\z//;

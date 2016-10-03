@@ -85,9 +85,13 @@
     <help>
         <![CDATA[
 
-        **GraphClust PrepareForMlocarna**
+**What it does**
 
-        The tool prepares files for mlocarna step.
+This tool prepares files for mlocarna step.
+
+.. class:: warningmark
+
+The number of nearest neighbors must be the same as in previous step (NSPDK step)
 
 ]]>
     </help>
