@@ -177,11 +177,11 @@ postgresql://eteri:qovren/TestDB
 # Set to the string none to explicitly disable tool dependency handling.
 # If this option is set to none or an invalid path, installing tools with dependencies
 # from the Tool Shed will fail.
-<<<<<<< HEAD
+
 tool_dependency_dir = tool_dependency
-=======
+
 #tool_dependency_dir = database/dependencies
->>>>>>> upstream/master
+
 
 # The dependency resolvers config file specifies an ordering and options for how
 # Galaxy resolves tool dependencies (requirement tags in Tool XML). The default
